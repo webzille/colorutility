@@ -1,0 +1,19 @@
+{
+    "name": "webzille/colorutility",
+    "description": "Color utility package",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Webzille\\ColorUtility\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "webzille",
+            "email": "admin@webzille.com"
+        }
+    ],
+    "minimum-stability": "RC",
+    "require": {}
+}

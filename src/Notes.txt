@@ -1,0 +1,2 @@
+    Named Colors: CSS also provides a set of named colors that can be used directly without specifying RGB values.
+    Some examples include red, green, blue, etc.
