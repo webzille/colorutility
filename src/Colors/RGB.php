@@ -209,41 +209,6 @@ class RGB extends Color {
 
     public function asHSLA(float $alpha = 1): HSLA
     {
-        list($r, $g, $b) = $this->asArray();
-        
-        $r = $r / 255;
-        $g = $g / 255;
-        $b = $b / 255;
-
-        $max = max($r, $g, $b);
-        $min = min($r, $g, $b);
-
-        $lum = ($max + $min) / 2;
-        $hue = 0;
-        $sat = 0;
-
-        if ($max != $min) {
-            $c = $max - $min;
-
-            $sat = $c / (1 - abs(2 * $lum - 1));
-
-            switch ($max) {
-                case $r:
-                    $hue = ((int) ($g - $b) / $c) % 6;
-                    break;
-                case $g:
-                    $hue = ($b - $r) / $c + 2;
-                    break;
-                case $b:
-                    $hue = ($r - $g) / $c + 4;
-                    break;
-            }
-        }
-
-        $hue = round($hue * 60);
-        $sat = round($sat * 100);
-        $lum = round($lum * 100);
-
-        return new HSLA($hue, $sat, $lum, $alpha);
+        return $this->asHSL()->asHSLA($alpha);
     }
 }
