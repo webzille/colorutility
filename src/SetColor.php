@@ -33,7 +33,7 @@ class SetColor {
 
         if (preg_match('/^(#)?([0-9a-fA-F]{2,4}|[0-9a-fA-F]{6,8})$/', $colorString, $matches)) {
             $hexColor = isset($matches[2]) ? $matches[2] : $matches[0];
-            print_r($matches);
+            
             return new HEX($hexColor);
         }
 
