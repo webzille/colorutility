@@ -20,7 +20,7 @@ class HSLA extends Color {
 
     private float $alpha;
 
-    function __construct(float $h, float $s, float $l, float $alpha)
+    function __construct(float $h, float $s, float $l, float $alpha = 1)
     {
         $this->h = $h;
 
@@ -58,47 +58,47 @@ class HSLA extends Color {
 
     public function calculateAngle(Color $color): float
     {
-        return $this->asRGB()->asLAB()->calculateAngle($color);
+        return $this->asLAB()->calculateAngle($color);
     }
 
     public function digitalDistance(Color $color): float
     {
-        return $this->asRGB()->asLAB()->digitalDistance($color);
+        return $this->asLAB()->digitalDistance($color);
     }
 
     public function visibleDifference(Color $color): float
     {
-        return $this->asRGB()->asLAB()->visibleDifference($color);
+        return $this->asLAB()->visibleDifference($color);
     }
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asRGB()->asLAB()->findColorByAngle($angle)->asHSLA();
+        return $this->asLAB()->findColorByAngle($angle)->asHSLA();
     }
 
     public function findColorAtDifference(float $difference): self
     {
-        return $this->asRGB()->asLAB()->findColorAtDifference($difference)->asHSLA();
+        return $this->asLAB()->findColorAtDifference($difference)->asHSLA();
     }
 
     public function findColorAtDistance(float $distance): self
     {
-        return $this->asRGB()->asLAB()->findColorAtDistance($distance)->asHSLA();
+        return $this->asLAB()->findColorAtDistance($distance)->asHSLA();
     }
 
     public function findColorByShade(int $shade): self
     {
-        return $this->asRGB()->asLAB()->findColorByShade($shade)->asHSLA();
+        return $this->asLAB()->findColorByShade($shade)->asHSLA();
     }
 
     public function linearDeviance(float $percent): self
     {
-        return $this->asRGB()->asLAB()->linearDeviance($percent)->asHSLA();
+        return $this->asLAB()->linearDeviance($percent)->asHSLA();
     }
 
     public function angularDeviance(float $percent): self
     {
-        return $this->asRGB()->asLAB()->angularDeviance($percent)->asHSLA();
+        return $this->asLAB()->angularDeviance($percent)->asHSLA();
     }
 
     public function getHue(): float
@@ -128,7 +128,7 @@ class HSLA extends Color {
 
     public function asCylindrical(): CylindricalLAB
     {
-        return $this->asRGB()->asLAB()->asCylindrical();
+        return $this->asLAB()->asCylindrical();
     }
 
     public function asRGBA(float $alpha = null): RGBA
@@ -146,7 +146,7 @@ class HSLA extends Color {
 
         $chroma = (1 - abs(2 * $lightness - 1)) * $saturation;
         $hueSector = $hue * 6;
-        $x = $chroma * (1 - abs($hueSector % 2 - 1));
+        $x = $chroma * (1 - abs((int) $hueSector % 2 - 1));
 
         $r1 = $g1 = $b1 = 0;
         switch (floor($hueSector)) {
