@@ -171,38 +171,40 @@ class RGB extends Color {
     {
         list($r, $g, $b) = $this->asArray();
         
-        $r = $r / 255;
-        $g = $g / 255;
-        $b = $b / 255;
+        $r = $r / 255.0;
+        $g = $g / 255.0;
+        $b = $b / 255.0;
 
         $max = max($r, $g, $b);
         $min = min($r, $g, $b);
 
-        $lum = ($max + $min) / 2;
-        $hue = 0;
-        $sat = 0;
+        $lum = ($max + $min) / 2.0;
+        $hue = 0.0;
+        $sat = 0.0;
 
         if ($max != $min) {
             $c = $max - $min;
 
-            $sat = $c / (1 - abs(2 * $lum - 1));
+            $sat = $c / (1.0 - abs(2.0 * $lum - 1.0));
 
             switch ($max) {
                 case $r:
-                    $hue = ((int) ($g - $b) / $c) % 6;
+                    $hue = ($g - $b) / $c;
                     break;
                 case $g:
-                    $hue = ($b - $r) / $c + 2;
+                    $hue = ($b - $r) / $c + 2.0;
                     break;
                 case $b:
-                    $hue = ($r - $g) / $c + 4;
+                    $hue = ($r - $g) / $c + 4.0;
                     break;
             }
+
+            $hue = ($hue < 0.0 ? $hue + 6.0 : $hue);
         }
 
-        $hue = round($hue * 60);
-        $sat = round($sat * 100);
-        $lum = round($lum * 100);
+        $hue = round($hue * 60.0);
+        $sat = round($sat * 100.0);
+        $lum = round($lum * 100.0);
 
         return new HSL($hue, $sat, $lum);
     }
