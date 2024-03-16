@@ -169,65 +169,81 @@ class RGB extends Color {
 
     public function asHSL(): HSL
     {
-        $r = $this->r / 255;
-        $g = $this->g / 255;
-        $b = $this->b / 255;
+        list($r, $g, $b) = $this->asArray();
+        
+        $r = $r / 255;
+        $g = $g / 255;
+        $b = $b / 255;
 
         $max = max($r, $g, $b);
         $min = min($r, $g, $b);
-        $delta = $max - $min;
 
-        $lightness = ($max + $min) / 2;
-        $saturation = ($delta == 0) ? 0 : $delta / (1 - abs(2 * $lightness - 1));
-
+        $lum = ($max + $min) / 2;
         $hue = 0;
-        if ($delta != 0) {
-            if ($max == $r) {
-                $hue = 60 * ((int) ($g - $b) / $delta) % 360;
-            } else if ($max == $g) {
-                $hue = 60 * ((int) ($b - $r) / $delta) + 120;
-            } else if ($max == $b) {
-                $hue = 60 * ((int) ($r - $g) / $delta) + 240;
+        $sat = 0;
+
+        if ($max != $min) {
+            $c = $max - $min;
+
+            $sat = $c / (1 - abs(2 * $lum - 1));
+
+            switch ($max) {
+                case $r:
+                    $hue = ((int) ($g - $b) / $c) % 6;
+                    break;
+                case $g:
+                    $hue = ($b - $r) / $c + 2;
+                    break;
+                case $b:
+                    $hue = ($r - $g) / $c + 4;
+                    break;
             }
         }
 
-        if ($hue < 0) {
-            $hue += 360;
-        }
+        $hue = round($hue * 60);
+        $sat = round($sat * 100);
+        $lum = round($lum * 100);
 
-        return new HSL($hue, $saturation *100, $lightness * 100);
+        return new HSL($hue, $sat, $lum);
     }
 
     public function asHSLA(float $alpha = 1): HSLA
     {
         list($r, $g, $b) = $this->asArray();
+        
+        $r = $r / 255;
+        $g = $g / 255;
+        $b = $b / 255;
 
-        $r /= 255.0;
-        $g /= 255.0;
-        $b /= 255.0;
+        $max = max($r, $g, $b);
+        $min = min($r, $g, $b);
 
-        $min_val = min($r, $g, $b);
-        $max_val = max($r, $g, $b);
+        $lum = ($max + $min) / 2;
+        $hue = 0;
+        $sat = 0;
 
-        $l = ($max_val + $min_val) / 2.0;
+        if ($max != $min) {
+            $c = $max - $min;
 
-        if ($max_val == $min_val) {
-            $h = $s = 0;
-        } else {
-            $d = $max_val - $min_val;
-            $s = $l > 0.5 ? $d / (2.0 - $max_val - $min_val) : $d / ($max_val + $min_val);
+            $sat = $c / (1 - abs(2 * $lum - 1));
 
-            if ($max_val == $r) {
-                $h = ($g - $b) / $d + ($g < $b ? 6 : 0);
-            } elseif ($max_val == $g) {
-                $h = ($b - $r) / $d + 2;
-            } else {
-                $h = ($r - $g) / $d + 4;
+            switch ($max) {
+                case $r:
+                    $hue = ((int) ($g - $b) / $c) % 6;
+                    break;
+                case $g:
+                    $hue = ($b - $r) / $c + 2;
+                    break;
+                case $b:
+                    $hue = ($r - $g) / $c + 4;
+                    break;
             }
-
-            $h *= 60;
         }
 
-        return new HSLA($h, $s, $l, $alpha);
+        $hue = round($hue * 60);
+        $sat = round($sat * 100);
+        $lum = round($lum * 100);
+
+        return new HSLA($hue, $sat, $lum, $alpha);
     }
 }
