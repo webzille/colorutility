@@ -118,7 +118,7 @@ class HSLA extends Color {
 
     public function asHEX(): HEX
     {
-        return $this->asRGB()->asHEX();
+        return $this->asRGB()->asHEX($this->alpha);
     }
 
     public function asLAB(): LAB
@@ -140,9 +140,9 @@ class HSLA extends Color {
 
     public function asRGB(): RGB
     {
-        $hue = $this-> h /360;
+        $hue = $this-> h / 360;
         $saturation = $this->s / 100;
-        $lightness = $this->l/ 100;
+        $lightness = $this->l / 100;
 
         $chroma = (1 - abs(2 * $lightness - 1)) * $saturation;
         $hueSector = $hue * 6;
