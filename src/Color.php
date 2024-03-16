@@ -14,6 +14,14 @@ use Webzille\ColorUtility\Colors\RGBA;
 
 abstract class Color {
 
+    protected array $websafe = [
+                                RGBA::class,
+                                RGB::class,
+                                HSLA::class,
+                                HSL::class,
+                                HEX::class
+                            ];
+
     function __toString(): string
     {
         return $this->asString();
@@ -66,11 +74,13 @@ abstract class Color {
 
     public function viewColor(string $label = null): string
     {
-        $rgbColor = ($this instanceof RGB) ? $this : $this->asRGB();
+        $isWebSafe = in_array(get_class($this), $this->websafe);
 
-        $fontColor = ($rgbColor->isLight()) ? $rgbColor->black() : $rgbColor->white();
+        $rgbColor = $isWebSafe ? $this : $this->asRGB();
 
-        $label = trim("$label $this");
+        $fontColor = $rgbColor->isLight() ? $rgbColor->black() : $rgbColor->white();
+
+        $label = trim("$label $rgbColor");
 
         return "<span style=\"padding-inline: 3rem; background-color: $rgbColor; color: $fontColor;\">$label</span>\n";
     }
