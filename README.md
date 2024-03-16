@@ -1,4 +1,4 @@
-# Color Utility Packager
+# Color Utility Package
 A color utility package for whatever color practices you need.
 
 You may set a color from string using the `SetColor` factory:
