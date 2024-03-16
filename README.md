@@ -67,3 +67,12 @@ echo $hsla->viewColor("The color");
 ```
 
 While `angularDeviance()` essentially does the same thing as `findColorByAngle()`, it uses a percent as the arguement instead of an angle. 100% is 180 degrees and 200% is full 360 degrees.
+
+Transparency converts between colors that support them.
+
+```PHP
+$alphaRGBA = new RGBA(234, 21, 148, 0.5);
+echo $alphaRGBA->viewColor("Transparency Here");
+echo $alphaRGBA->asHSLA()->viewColor("As HSLA");
+echo $alphaRGBA->asHEX()->viewColor("As HEX");
+```
