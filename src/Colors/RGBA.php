@@ -127,11 +127,12 @@ class RGBA extends Color {
 
     public function asHEX(): HEX
     {
+        $alpha = str_pad(dechex(max(0, min(255, round($this->alpha * 255)))), 2, '0', STR_PAD_LEFT);
         $r = str_pad(dechex($this->r), 2, '0', STR_PAD_LEFT);
         $g = str_pad(dechex($this->g), 2, '0', STR_PAD_LEFT);
         $b = str_pad(dechex($this->b), 2, '0', STR_PAD_LEFT);
 
-        return new HEX($r . $g . $b);
+        return new HEX($r . $g . $b . $alpha);
     }
 
     public function asLAB(): LAB
