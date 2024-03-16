@@ -29,11 +29,12 @@ class HEX extends Color {
 
         $this->alpha = '';
 
-        switch(strlen($HEX)) {
+        switch (strlen($HEX)) {
             case 2:
                 $this->r = $HEX[0] . $HEX[0];
                 $this->g = $HEX[1] . $HEX[1];
                 $this->b = $HEX[0] . $HEX[0];
+                $this->alpha = 'FF';
                 break;
             case 3:
                 $this->r = $HEX[0] . $HEX[0];
@@ -41,21 +42,27 @@ class HEX extends Color {
                 $this->b = $HEX[2] . $HEX[2];
                 break;
             case 4:
-                $this->alpha = $HEX[0] . $HEX[0];
-                $this->r = $HEX[1] . $HEX[1];
-                $this->g = $HEX[2] . $HEX[2];
-                $this->b = $HEX[3] . $HEX[3];
+                $this->alpha = $HEX[2] . $HEX[3];
+                $this->r = $HEX[0] . $HEX[0];
+                $this->g = $HEX[1] . $HEX[1];
+                $this->b = $HEX[0] . $HEX[0];
                 break;
             case 6:
                 $this->r = $HEX[0] . $HEX[1];
                 $this->g = $HEX[2] . $HEX[3];
                 $this->b = $HEX[4] . $HEX[5];
                 break;
+            case 7:
+                $this->alpha = $HEX[5] . $HEX[6];
+                $this->r = $HEX[1] . $HEX[2];
+                $this->g = $HEX[3] . $HEX[4];
+                $this->b = $HEX[0] . $HEX[0];
+                break;
             case 8:
-                $this->alpha = $HEX[0] . $HEX[1];
+                $this->alpha = $HEX[6] . $HEX[7];
                 $this->r = $HEX[2] . $HEX[3];
                 $this->g = $HEX[4] . $HEX[5];
-                $this->b = $HEX[6] . $HEX[7];
+                $this->b = $HEX[0] . $HEX[1];
                 break;
         }
     }
@@ -191,8 +198,8 @@ class HEX extends Color {
 
     public function asHSLA(float $alpha = null): HSLA
     {
-        if ($alpha === '') {
-            $alpha = ($this->alpha === null) ? 1 : hexdec($this->alpha);
+        if ($alpha === null) {
+            $alpha = ($this->alpha === '') ? 1 : hexdec($this->alpha);
         }
 
         return $this->asRGB()->asHSLA($alpha);
