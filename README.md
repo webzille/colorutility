@@ -1,6 +1,8 @@
 # Color Utility Package
 A color utility package for whatever color practices you need.
 
+> composer require webzille/colorutility
+
 You may set a color from string using the `SetColor` factory:
 
 ```PHP
