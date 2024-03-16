@@ -43,7 +43,7 @@ echo $RGBAObject;
 
 Any named color is converted to their RGB variant. Each object has a `__toString()` implementation which would print a valid string for CSS implementation. `__toString()` uses the `asString()` method as the string version of the object.
 
-You could also find tetradic colors, monochromatic tones/shades, complementary, triadic, analogous and split complementary colors of a reference color.
+You could also find tetradic colors, monochromatic tones/shades, complementary, triadic, analogous and split complementary colors of a the current color object.
 
 ```PHP
 $tetradicColors = $HexObject2->asHSL()->tetradicColors();
@@ -65,3 +65,5 @@ $hsla = $HexObject2->asHSLA();
 echo $HexObject2->viewColor("For Reference");
 echo $hsla->viewColor("The color");
 ```
+
+While `angularDeviance()` essentially does the same thing as `findColorByAngle()`, it uses a percent as the arguement instead of an angle. 100% is 180 degrees and 200% is full 360 degrees.
