@@ -1,7 +1,5 @@
 <?php
 
-// https://www.cs.rit.edu/~ncs/color/t_convert.html#RGB%20to%20XYZ%20&%20XYZ%20to%20RGB
-
 namespace Webzille\ColorUtility;
 
 use Webzille\ColorUtility\Colors\CylindricalLAB;
@@ -76,13 +74,13 @@ abstract class Color {
     {
         $isWebSafe = in_array(get_class($this), $this->websafe);
 
-        $rgbColor = $isWebSafe ? $this : $this->asRGB();
+        $webSafeColor = $isWebSafe ? $this : $this->asRGB();
 
-        $fontColor = $rgbColor->isLight() ? $rgbColor->black() : $rgbColor->white();
+        $fontColor = $webSafeColor->isLight() ? $webSafeColor->black() : $webSafeColor->white();
 
-        $label = trim("$label $rgbColor");
+        $label = trim("$label $webSafeColor");
 
-        return "<span style=\"padding-inline: 3rem; background-color: $rgbColor; color: $fontColor;\">$label</span>\n";
+        return "<span style=\"padding-inline: 3rem; background-color: $webSafeColor; color: $fontColor;\">$label</span>\n";
     }
 
     abstract function calculateAngle(Color $angle);
@@ -93,11 +91,11 @@ abstract class Color {
 
     abstract function visibleDifference(Color $color);
 
+    abstract function findColorAtDifference(float $difference);
+
     abstract function findColorByAngle(float $angle);
 
     abstract function findColorByShade(int $shade);
-
-    abstract function findColorAtDifference(float $difference);
 
     abstract function linearDeviance(float $percent);
 
