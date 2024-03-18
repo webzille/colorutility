@@ -68,15 +68,24 @@ class LAB extends Color {
 
     public function findColorByAngle($angle): self
     {
-        $angleRad = deg2rad($angle);
+        $threshold = 5;
 
+        if (abs($this->a) <= $threshold || abs($this->b) <= $threshold) {
+            $this->a += ($angle > 0) ? 5 : -5;
+            $this->b += ($angle > 0) ? 5 : -5;
+        }
+        
+        $angleRad = deg2rad($angle);
         $deltaA = cos($angleRad);
         $deltaB = sin($angleRad);
 
         $newA = $this->a * $deltaA - $this->b * $deltaB;
         $newB = $this->a * $deltaB + $this->b * $deltaA;
 
-        return new LAB($this->L, $newA, $newB);
+        $this->a = $newA;
+        $this->b = $newB;
+
+        return new LAB($this->L, $this->a, $this->b);
     }
 
     public function digitalDistance(Color $color): float
