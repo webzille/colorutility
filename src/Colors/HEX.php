@@ -199,7 +199,7 @@ class HEX extends Color {
     public function asHSLA(float $alpha = null): HSLA
     {
         if ($alpha === null) {
-            $alpha = ($this->alpha === '') ? 1 : hexdec($this->alpha);
+            $alpha = ($this->alpha === '') ? 1 : hexdec($this->alpha) / 255;
         }
 
         return $this->asRGB()->asHSLA($alpha);
