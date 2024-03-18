@@ -27,7 +27,7 @@ class HEX extends Color {
     {
         $this->HEX = $HEX;
 
-        $this->alpha = '';
+        $this->alpha = 'ff';
 
         switch (strlen($HEX)) {
             case 2:
@@ -171,12 +171,14 @@ class HEX extends Color {
         return new RGB($r, $g, $b);
     }
 
-    public function asRGBA(float $alpha = 1): RGBA
+    public function asRGBA(float $alpha = null): RGBA
     {
+        $alpha = ($alpha === null) ? $this->alpha : $alpha;
+
         $r = hexdec($this->r);
         $g = hexdec($this->g);
         $b = hexdec($this->b);
-        $a = hexdec($this->alpha);
+        $a = hexdec($alpha);
 
         return new RGBA($r, $g, $b, $a);
     }
