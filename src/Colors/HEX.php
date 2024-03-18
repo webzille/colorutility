@@ -173,12 +173,10 @@ class HEX extends Color {
 
     public function asRGBA(float $alpha = null): RGBA
     {
-        $alpha = ($alpha === null) ? hexdec($this->alpha) / 255 : $alpha;
-
         $r = hexdec($this->r);
         $g = hexdec($this->g);
         $b = hexdec($this->b);
-        $a = $alpha;
+        $a = ($alpha === null) ? hexdec($this->alpha) / 255 : $alpha;
 
         return new RGBA($r, $g, $b, $a);
     }
