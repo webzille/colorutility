@@ -66,7 +66,7 @@ class LAB extends Color {
         return rad2deg($angleRadians);
     }
 
-    public function findColorByAngle($angle): self
+    public function findColorByAngle(float $angle): self
     {
         $threshold = 5;
 
@@ -79,11 +79,8 @@ class LAB extends Color {
         $deltaA = cos($angleRad);
         $deltaB = sin($angleRad);
 
-        $newA = $this->a * $deltaA - $this->b * $deltaB;
-        $newB = $this->a * $deltaB + $this->b * $deltaA;
-
-        $this->a = $newA;
-        $this->b = $newB;
+        $this->a = $this->a * $deltaA - $this->b * $deltaB;
+        $this->b = $this->a * $deltaB + $this->b * $deltaA;
 
         return new LAB($this->L, $this->a, $this->b);
     }
