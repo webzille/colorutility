@@ -55,7 +55,7 @@ abstract class Color {
         return $this;
     }
 
-    public function asCylindricalLAB(): CylindricalLAB
+    public function asCylindrical(): CylindricalLAB
     {
         return $this;
     }
