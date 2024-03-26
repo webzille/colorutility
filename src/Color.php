@@ -139,7 +139,7 @@ abstract class Color {
 
     public function analogousColors(): array
     {
-        // Rotate the base color by small angles such as 30 degrees (30°) and 60 degrees (60°)
+        // Rotate the base color by 30 degrees (30°) in both directions
         return [
             $this->findColorByAngle(30),
             $this->findColorByAngle(-30)
