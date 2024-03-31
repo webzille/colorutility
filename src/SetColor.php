@@ -40,9 +40,11 @@ class SetColor {
         $namedColorsLookupTable = require self::$namedColorsLookupTable;
 
         if (isset($namedColorsLookupTable[$colorString])) {
-            $rgbValue = explode(',', $namedColorsLookupTable[$colorString]['rgb']);
+            $colorValue = explode(',', $namedColorsLookupTable[$colorString]['rgb'] ?? $namedColorsLookupTable[$colorString]['rgba']);
 
-            return new RGB(...$rgbValue);
+            $colorClass = count($colorValue) === 3 ? RGB::class : RGBA::class;
+            
+            return new $colorClass(...$colorValue);
         }
 
         return false;
