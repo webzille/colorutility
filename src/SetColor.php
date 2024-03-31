@@ -49,7 +49,7 @@ class SetColor {
     }
 
     private static function getColors($colorString) {
-        preg_match_all('/\d+(\.\d+)?/', $colorString, $matches);
+        preg_match_all('/(?:\.\d+|\d+(?:\.\d+)?)/', $colorString, $matches);
         
         return $matches[0];
     }
