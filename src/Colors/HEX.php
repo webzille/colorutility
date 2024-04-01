@@ -33,8 +33,7 @@ class HEX extends Color {
             case 2:
                 $this->r = $HEX[0] . $HEX[0];
                 $this->g = $HEX[1] . $HEX[1];
-                $this->b = $HEX[0] . $HEX[0];
-                $this->alpha = 'FF';
+                $this->b = $HEX[1] . $HEX[1];
                 break;
             case 3:
                 $this->r = $HEX[0] . $HEX[0];
@@ -42,10 +41,10 @@ class HEX extends Color {
                 $this->b = $HEX[2] . $HEX[2];
                 break;
             case 4:
-                $this->alpha = $HEX[2] . $HEX[3];
                 $this->r = $HEX[0] . $HEX[0];
                 $this->g = $HEX[1] . $HEX[1];
-                $this->b = $HEX[0] . $HEX[0];
+                $this->b = $HEX[2] . $HEX[2];
+                $this->alpha = $HEX[3] . $HEX[3];
                 break;
             case 6:
                 $this->r = $HEX[0] . $HEX[1];
@@ -53,16 +52,16 @@ class HEX extends Color {
                 $this->b = $HEX[4] . $HEX[5];
                 break;
             case 7:
-                $this->alpha = $HEX[5] . $HEX[6];
-                $this->r = $HEX[1] . $HEX[2];
-                $this->g = $HEX[3] . $HEX[4];
-                $this->b = $HEX[0] . $HEX[0];
+                $this->r = $HEX[0] . $HEX[1];
+                $this->g = $HEX[2] . $HEX[3];
+                $this->b = $HEX[4] . $HEX[5];
+                $this->alpha = $HEX[6] . $HEX[6];
                 break;
             case 8:
+                $this->r = $HEX[0] . $HEX[1];
+                $this->g = $HEX[2] . $HEX[3];
+                $this->b = $HEX[4] . $HEX[5];
                 $this->alpha = $HEX[6] . $HEX[7];
-                $this->r = $HEX[2] . $HEX[3];
-                $this->g = $HEX[4] . $HEX[5];
-                $this->b = $HEX[0] . $HEX[1];
                 break;
         }
     }
