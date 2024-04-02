@@ -43,7 +43,7 @@ class HSLA extends Color {
 
     public function isLight(): bool
     {
-        return $this->l > 50;
+        return $this->alpha < 0.4 ?: $this->l > 50;
     }
 
     public function white(): self
