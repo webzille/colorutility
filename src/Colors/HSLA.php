@@ -118,7 +118,7 @@ class HSLA extends Color {
 
     public function asHEX(): HEX
     {
-        return $this->asRGB()->asHEX($this->alpha);
+        return $this->asRGBA()->asHEX();
     }
 
     public function asLAB(): LAB
