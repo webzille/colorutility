@@ -78,7 +78,7 @@ class HEX extends Color {
 
     public function isLight(): bool
     {
-        return $this->asRGB()->isLight();
+        return $this->asRGBA()->isLight();
     }
 
     public function white(): self
