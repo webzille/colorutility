@@ -41,8 +41,8 @@ class RGBA extends Color {
     public function isLight(): bool
     {
         $brightness = ($this->r * 0.2126) + ($this->g * 0.7152) + ($this->b * 0.0722);
-        
-        return ceil($brightness) > 110;
+
+        return $this->alpha < 0.4 ?: ceil($brightness) > 110;
     }
 
     public function white(): self
