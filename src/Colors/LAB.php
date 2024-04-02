@@ -53,13 +53,13 @@ class LAB extends Color {
 
     public function calculateAngle(Color $color): float
     {
-        list($z1, $x1, $y1) = $this->asArray();
-        list($z2, $x2, $y2) = $color->asLAB()->asArray();
+        list($L1, $a1, $b1) = $this->asArray();
+        list($L2, $a2, $b2) = $color->asLAB()->asArray();
 
-        $dotProduct = $x1 * $x2 + $y1 * $y2 + $z1 * $z2;
+        $dotProduct = $a1 * $a2 + $b1 * $b2 + $L1 * $L2;
 
-        $magnitude1 = sqrt($x1 ** 2 + $y1 ** 2 + $z1 ** 2);
-        $magnitude2 = sqrt($x2 ** 2 + $y2 ** 2 + $z2 ** 2);
+        $magnitude1 = sqrt($a1 ** 2 + $b1 ** 2 + $L1 ** 2);
+        $magnitude2 = sqrt($a2 ** 2 + $b2 ** 2 + $L2 ** 2);
 
         $angleRadians = acos($dotProduct / ($magnitude1 * $magnitude2));
 
