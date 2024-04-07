@@ -3,14 +3,9 @@
 namespace Webzille\ColorUtility\Colors;
 
 use Webzille\ColorUtility\Color;
-use Webzille\ColorUtility\Colors\CylindricalLAB;
-use Webzille\ColorUtility\Colors\HEX;
-use Webzille\ColorUtility\Colors\HSL;
-use Webzille\ColorUtility\Colors\HSLA;
-use Webzille\ColorUtility\Colors\LAB;
-use Webzille\ColorUtility\Colors\RGBA;
 
-class RGB extends Color {
+class RGB extends Color
+{
 
     private float $r;
 
@@ -38,7 +33,7 @@ class RGB extends Color {
     public function isLight(): bool
     {
         $brightness = ($this->r * 0.2126) + ($this->g * 0.7152) + ($this->b * 0.0722);
-        
+
         return ceil($brightness) > 110;
     }
 
@@ -54,7 +49,7 @@ class RGB extends Color {
 
     public function calculateAngle(Color $color): float
     {
-        return $this->asLAB()->calculateAngle($color);
+        return $this->asHSV()->calculateAngle($color);
     }
 
     public function digitalDistance(Color $color): float
@@ -69,7 +64,7 @@ class RGB extends Color {
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asLAB()->findColorByAngle($angle)->asRGB();
+        return $this->asHSV()->findColorByAngle($angle)->asRGB();
     }
 
     public function findColorAtDifference(float $difference): self
@@ -114,9 +109,9 @@ class RGB extends Color {
 
     public function asHEX(): HEX
     {
-        $r = str_pad(dechex($this->r), 2, '0', STR_PAD_LEFT);
-        $g = str_pad(dechex($this->g), 2, '0', STR_PAD_LEFT);
-        $b = str_pad(dechex($this->b), 2, '0', STR_PAD_LEFT);
+        $r = str_pad(dechex((int) $this->r), 2, '0', STR_PAD_LEFT);
+        $g = str_pad(dechex((int) $this->g), 2, '0', STR_PAD_LEFT);
+        $b = str_pad(dechex((int) $this->b), 2, '0', STR_PAD_LEFT);
 
         return new HEX($r . $g . $b);
     }
@@ -129,9 +124,9 @@ class RGB extends Color {
         $y /= 100.000;
         $z /= 108.883;
 
-        $x = $x > 0.008856 ? pow($x, 1/3) : (7.787 * $x + 16 / 116);
-        $y = $y > 0.008856 ? pow($y, 1/3) : (7.787 * $y + 16 / 116);
-        $z = $z > 0.008856 ? pow($z, 1/3) : (7.787 * $z + 16 / 116);
+        $x = $x > 0.008856 ? pow($x, 1 / 3) : (7.787 * $x + 16 / 116);
+        $y = $y > 0.008856 ? pow($y, 1 / 3) : (7.787 * $y + 16 / 116);
+        $z = $z > 0.008856 ? pow($z, 1 / 3) : (7.787 * $z + 16 / 116);
 
         $L = max(0, 116 * $y - 16);
         $a = 500 * ($x - $y);
@@ -170,7 +165,7 @@ class RGB extends Color {
     public function asHSL(): HSL
     {
         list($r, $g, $b) = $this->asArray();
-        
+
         $r = $r / 255.0;
         $g = $g / 255.0;
         $b = $b / 255.0;
@@ -212,5 +207,42 @@ class RGB extends Color {
     public function asHSLA(float $alpha = 1): HSLA
     {
         return $this->asHSL()->asHSLA($alpha);
+    }
+
+    public function asHSV(): HSV
+    {
+        $this->r /= 255;
+        $this->g /= 255;
+        $this->b /= 255;
+
+        $max = max($this->r, $this->g, $this->b);
+        $min = min($this->r, $this->g, $this->b);
+
+        $v = $max;
+
+        if ($max == $min) {
+            $h = 0;
+            $s = 0;
+        } else {
+            $delta = $max - $min;
+
+            $s = $delta / $v;
+
+            $h = 0;
+            if ($max == $this->r) {
+                $h = 60 * fmod(($this->g - $this->b) / $delta, 6);
+            } elseif ($max == $this->g) {
+                $h = 60 * ((($this->b - $this->r) / $delta) + 2);
+            } else {
+                $h = 60 * ((($this->r - $this->g) / $delta) + 4);
+            }
+        }
+
+        $h = fmod($h, 360);
+
+        $s *= 100;
+        $v *= 100;
+
+        return new HSV($h, $s, $v);
     }
 }
