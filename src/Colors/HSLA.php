@@ -3,12 +3,6 @@
 namespace Webzille\ColorUtility\Colors;
 
 use Webzille\ColorUtility\Color;
-use Webzille\ColorUtility\Colors\CylindricalLAB;
-use Webzille\ColorUtility\Colors\HEX;
-use Webzille\ColorUtility\Colors\HSL;
-use Webzille\ColorUtility\Colors\LAB;
-use Webzille\ColorUtility\Colors\RGB;
-use Webzille\ColorUtility\Colors\RGBA;
 
 class HSLA extends Color {
 
@@ -43,7 +37,7 @@ class HSLA extends Color {
 
     public function isLight(): bool
     {
-        return $this->alpha < 0.4 ?: $this->l > 50;
+        return $this->alpha < 0.4 ?: $this->l >= 50;
     }
 
     public function white(): self
@@ -58,7 +52,7 @@ class HSLA extends Color {
 
     public function calculateAngle(Color $color): float
     {
-        return $this->asLAB()->calculateAngle($color);
+        return $this->asHSV()->calculateAngle($color);
     }
 
     public function digitalDistance(Color $color): float
@@ -73,7 +67,7 @@ class HSLA extends Color {
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asLAB()->findColorByAngle($angle)->asHSLA();
+        return $this->asHSV()->findColorByAngle($angle)->asHSLA();
     }
 
     public function findColorAtDifference(float $difference): self
@@ -191,5 +185,24 @@ class HSLA extends Color {
     public function asHSL(): HSL
     {
         return new HSL($this->h, $this->s, $this->l);
+    }
+
+    public function asHSV(): HSV
+    {
+        // Convert HSL values to 0-1 range if needed
+        $h = $this->h / 360;
+        $s = $this->s / 100;
+        $l = $this->l / 100;
+
+        $q = ($l < 0.5) ? (1 + $s * (2 * $l - 1)) : (1 - $s * (1 - 2 * $l));
+
+        $saturation = $q <= 1 ? ($s / $q) : (2 * $s / (1 - $q));
+
+        $h = $h * 360;
+
+        $saturation *= 100;
+        $q *= 100;
+
+        return new HSV($h, $saturation, $q);
     }
 }
