@@ -93,7 +93,7 @@ class HEX extends Color {
 
     public function calculateAngle(Color $color): float
     {
-        return $this->asLAB()->calculateAngle($color->asLAB());
+        return $this->asHSV()->calculateAngle($color->asLAB());
     }
 
     public function digitalDistance(Color $color): float
@@ -108,7 +108,7 @@ class HEX extends Color {
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asLAB()->findColorByAngle($angle)->asHEX();
+        return $this->asHSV()->findColorByAngle($angle)->asHEX();
     }
 
     public function findColorAtDifference(float $difference): self
@@ -202,5 +202,10 @@ class HEX extends Color {
         }
 
         return $this->asRGB()->asHSLA($alpha);
+    }
+
+    public function asHSV(): hsv
+    {
+        return $this->asRGB()->asHSV();
     }
 }
