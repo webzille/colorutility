@@ -4,14 +4,9 @@ namespace Webzille\ColorUtility\Colors;
 
 use Webzille\ColorUtility\Calculations\DeltaE2000;
 use Webzille\ColorUtility\Color;
-use Webzille\ColorUtility\Colors\CylindricalLAB;
-use Webzille\ColorUtility\Colors\HEX;
-use Webzille\ColorUtility\Colors\HSL;
-use Webzille\ColorUtility\Colors\HSLA;
-use Webzille\ColorUtility\Colors\RGB;
-use Webzille\ColorUtility\Colors\RGBA;
 
-class LAB extends Color {
+class LAB extends Color
+{
 
     private float $L;
 
@@ -33,7 +28,7 @@ class LAB extends Color {
 
     public function asString(): string
     {
-        return "{$this->L}, {$this->a}, {$this->b}";
+        return "LAB({$this->L}, {$this->a}, {$this->b})";
     }
 
     public function isLight(): bool
@@ -68,21 +63,25 @@ class LAB extends Color {
 
     public function findColorByAngle(float $angle): self
     {
-        $threshold = 5;
+        $chroma = sqrt($this->a * $this->a + $this->b * $this->b);
 
-        if (abs($this->a) <= $threshold || abs($this->b) <= $threshold) {
-            $this->a += ($angle > 0) ? 5 : -5;
-            $this->b += ($angle > 0) ? 5 : -5;
+        $hue = rad2deg(atan2($this->b, $this->a));
+        if ($this->a > 0 && $this->b >= 0) {
+            $hue;
+        } elseif ($this->a < 0 && $this->b >= 0) {
+            $hue += 180;
+        } elseif ($this->a < 0 && $this->b < 0) {
+            $hue += 180;
+        } else {
+            $hue += 360;
         }
-        
-        $angleRad = deg2rad($angle);
-        $deltaA = cos($angleRad);
-        $deltaB = sin($angleRad);
 
-        $this->a = $this->a * $deltaA - $this->b * $deltaB;
-        $this->b = $this->a * $deltaB + $this->b * $deltaA;
+        $newHue = fmod($hue + $angle, 360);
 
-        return new LAB($this->L, $this->a, $this->b);
+        $newA = $chroma * cos(deg2rad($newHue));
+        $newB = $chroma * sin(deg2rad($newHue));
+
+        return new LAB($this->L, $newA, $newB);
     }
 
     public function digitalDistance(Color $color): float
@@ -102,20 +101,19 @@ class LAB extends Color {
 
         $currentStepSize = 128;
 
-        for ($i = 0; $i < 5000; $i++)
-        {
+        for ($i = 0; $i < 5000; $i++) {
             $midpoint = clone $bestColor;
-            
+
             $LAdjustment = rand((int) -$currentStepSize, (int) $currentStepSize);
             $aAdjustment = rand((int) -$currentStepSize, (int) $currentStepSize);
             $bAdjustment = rand((int) -$currentStepSize, (int) $currentStepSize);
-            
+
             $midpoint->L = max(0, min(100, $midpoint->L + $LAdjustment));
             $midpoint->a = max(-128, min(127, $midpoint->a + $aAdjustment));
             $midpoint->b = max(-128, min(127, $midpoint->b + $bAdjustment));
 
             $digitalDistance = $this->digitalDistance($midpoint);
-            
+
             if (abs($digitalDistance - $distance) < $tolerance) {
                 return $midpoint;
             }
@@ -148,18 +146,17 @@ class LAB extends Color {
 
         $currentStepSize = 128;
 
-        for ($i = 0; $i < 5000; $i++)
-        {
+        for ($i = 0; $i < 5000; $i++) {
             $midpoint = clone $bestColor;
-            
+
             $aAdjustment = rand((int) -$currentStepSize, (int) $currentStepSize);
             $bAdjustment = rand((int) -$currentStepSize, (int) $currentStepSize);
-            
+
             $midpoint->a = max(-128, min(127, $midpoint->a + $aAdjustment));
             $midpoint->b = max(-128, min(127, $midpoint->b + $bAdjustment));
 
             $deltaE = $this->visibleDifference($midpoint);
-            
+
             if (abs($deltaE - $difference) < $tolerance) {
                 return $midpoint;
             }
@@ -276,9 +273,9 @@ class LAB extends Color {
         $y /= 100.000;
         $z /= 108.883;
 
-        $x = $x > 0.008856 ? pow($x, 1/3) : (7.787 * $x + 16 / 116);
-        $y = $y > 0.008856 ? pow($y, 1/3) : (7.787 * $y + 16 / 116);
-        $z = $z > 0.008856 ? pow($z, 1/3) : (7.787 * $z + 16 / 116);
+        $x = $x > 0.008856 ? pow($x, 1 / 3) : (7.787 * $x + 16 / 116);
+        $y = $y > 0.008856 ? pow($y, 1 / 3) : (7.787 * $y + 16 / 116);
+        $z = $z > 0.008856 ? pow($z, 1 / 3) : (7.787 * $z + 16 / 116);
 
         $L = max(0, 116 * $y - 16);
         $a = 500 * ($x - $y);
@@ -312,5 +309,10 @@ class LAB extends Color {
     public function asHSLA(float $alpha = 1): HSLA
     {
         return $this->asRGB()->asHSLA($alpha);
+    }
+
+    public function asHSV(): HSV
+    {
+        return $this->asRGB()->asHSV();
     }
 }
