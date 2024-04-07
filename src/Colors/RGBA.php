@@ -3,12 +3,6 @@
 namespace Webzille\ColorUtility\Colors;
 
 use Webzille\ColorUtility\Color;
-use Webzille\ColorUtility\Colors\CylindricalLAB;
-use Webzille\ColorUtility\Colors\HEX;
-use Webzille\ColorUtility\Colors\HSL;
-use Webzille\ColorUtility\Colors\HSLA;
-use Webzille\ColorUtility\Colors\LAB;
-use Webzille\ColorUtility\Colors\RGB;
 
 class RGBA extends Color {
 
@@ -57,7 +51,7 @@ class RGBA extends Color {
 
     public function calculateAngle(Color $color): float
     {
-        return $this->asLAB()->calculateAngle($color);
+        return $this->asHSV()->calculateAngle($color);
     }
 
     public function digitalDistance(Color $color): float
@@ -72,7 +66,7 @@ class RGBA extends Color {
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asLAB()->findColorByAngle($angle)->asRGBA($this->alpha);
+        return $this->asHSV()->findColorByAngle($angle)->asRGBA($this->alpha);
     }
 
     public function findColorAtDifference(float $difference): self
@@ -223,5 +217,44 @@ class RGBA extends Color {
         $alpha = ($alpha === null) ? $this->alpha : $alpha;
         
         return $this->asHSL()->asHSLA($alpha);
+    }
+
+
+
+    public function asHSV(): HSV
+    {
+        $this->r /= 255;
+        $this->g /= 255;
+        $this->b /= 255;
+
+        $max = max($this->r, $this->g, $this->b);
+        $min = min($this->r, $this->g, $this->b);
+
+        $v = $max;
+
+        if ($max == $min) {
+            $h = 0;
+            $s = 0;
+        } else {
+            $delta = $max - $min;
+
+            $s = $delta / $v;
+
+            $h = 0;
+            if ($max == $this->r) {
+                $h = 60 * fmod(($this->g - $this->b) / $delta, 6);
+            } elseif ($max == $this->g) {
+                $h = 60 * ((($this->b - $this->r) / $delta) + 2);
+            } else {
+                $h = 60 * ((($this->r - $this->g) / $delta) + 4);
+            }
+        }
+
+        $h = fmod($h, 360);
+
+        $s *= 100;
+        $v *= 100;
+
+        return new HSV($h, $s, $v);
     }
 }
