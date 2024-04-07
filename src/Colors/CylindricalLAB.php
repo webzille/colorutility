@@ -3,12 +3,6 @@
 namespace Webzille\ColorUtility\Colors;
 
 use Webzille\ColorUtility\Color;
-use Webzille\ColorUtility\Colors\HEX;
-use Webzille\ColorUtility\Colors\HSL;
-use Webzille\ColorUtility\Colors\HSLA;
-use Webzille\ColorUtility\Colors\LAB;
-use Webzille\ColorUtility\Colors\RGB;
-use Webzille\ColorUtility\Colors\RGBA;
 
 class CylindricalLAB extends Color
 {
@@ -146,5 +140,10 @@ class CylindricalLAB extends Color
     public function asHSLA(float $alpha = 1): HSLA
     {
         return $this->asRGB()->asHSLA($alpha);
+    }
+
+    public function asHSV(): HSV
+    {
+        return $this->asRGB()->asHSV();
     }
 }
