@@ -9,6 +9,7 @@ use Webzille\ColorUtility\Colors\HSLA;
 use Webzille\ColorUtility\Colors\LAB;
 use Webzille\ColorUtility\Colors\RGB;
 use Webzille\ColorUtility\Colors\RGBA;
+use Webzille\ColorUtility\Colors\HSV;
 
 abstract class Color {
 
@@ -17,7 +18,7 @@ abstract class Color {
                                 RGB::class,
                                 HSLA::class,
                                 HSL::class,
-                                HEX::class
+                                HEX::class,
                             ];
 
     function __toString(): string
@@ -66,6 +67,11 @@ abstract class Color {
     }
 
     public function asHSLA(float $alpha): HSLA
+    {
+        return $this;
+    }
+
+    public function asHSV(): HSV
     {
         return $this;
     }
