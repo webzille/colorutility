@@ -3,14 +3,9 @@
 namespace Webzille\ColorUtility\Colors;
 
 use Webzille\ColorUtility\Color;
-use Webzille\ColorUtility\Colors\CylindricalLAB;
-use Webzille\ColorUtility\Colors\HEX;
-use Webzille\ColorUtility\Colors\HSLA;
-use Webzille\ColorUtility\Colors\LAB;
-use Webzille\ColorUtility\Colors\RGB;
-use Webzille\ColorUtility\Colors\RGBA;
 
-class HSL extends Color {
+class HSL extends Color
+{
 
     private float $h;
 
@@ -39,7 +34,7 @@ class HSL extends Color {
 
     public function isLight(): bool
     {
-        return $this->l > 50;
+        return $this->l >= 50;
     }
 
     public function white(): self
@@ -54,47 +49,47 @@ class HSL extends Color {
 
     public function calculateAngle(Color $color): float
     {
-        return $this->asRGB()->asLAB()->calculateAngle($color);
+        return $this->asHSV()->calculateAngle($color);
     }
 
     public function digitalDistance(Color $color): float
     {
-        return $this->asRGB()->asLAB()->digitalDistance($color);
+        return $this->asLAB()->digitalDistance($color);
     }
 
     public function visibleDifference(Color $color): float
     {
-        return $this->asRGB()->asLAB()->visibleDifference($color);
+        return $this->asLAB()->visibleDifference($color);
     }
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asRGB()->asLAB()->findColorByAngle($angle)->asHSL();
+        return $this->asHSV()->findColorByAngle($angle)->asHSL();
     }
 
     public function findColorAtDifference(float $difference): self
     {
-        return $this->asRGB()->asLAB()->findColorAtDifference($difference)->asHSL();
+        return $this->asLAB()->findColorAtDifference($difference)->asHSL();
     }
 
     public function findColorAtDistance(float $distance): self
     {
-        return $this->asRGB()->asLAB()->findColorAtDistance($distance)->asHSL();
+        return $this->asLAB()->findColorAtDistance($distance)->asHSL();
     }
 
     public function findColorByShade(int $shade): self
     {
-        return $this->asRGB()->asLAB()->findColorByShade($shade)->asHSL();
+        return $this->asLAB()->findColorByShade($shade)->asHSL();
     }
 
     public function linearDeviance(float $percent): self
     {
-        return $this->asRGB()->asLAB()->linearDeviance($percent)->asHSL();
+        return $this->asLAB()->linearDeviance($percent)->asHSL();
     }
 
     public function angularDeviance(float $percent): self
     {
-        return $this->asRGB()->asLAB()->angularDeviance($percent)->asHSL();
+        return $this->asLAB()->angularDeviance($percent)->asHSL();
     }
 
     public function getHue(): float
@@ -124,7 +119,7 @@ class HSL extends Color {
 
     public function asCylindrical(): CylindricalLAB
     {
-        return $this->asRGB()->asLAB()->asCylindrical();
+        return $this->asLAB()->asCylindrical();
     }
 
     public function asRGBA(float $alpha = 1): RGBA
@@ -134,13 +129,13 @@ class HSL extends Color {
 
     public function asRGB(): RGB
     {
-        $hue = $this-> h / 360;
+        $hue = $this->h / 360;
         $saturation = $this->s / 100;
         $lightness = $this->l  / 100;
 
         $chroma = (1 - abs(2 * $lightness - 1)) * $saturation;
         $hueSector = $hue * 6;
-        $x = $chroma * (1 - abs($hueSector % 2 - 1));
+        $x = $chroma * (1 - abs((int) $hueSector % 2 - 1));
 
         $r1 = $g1 = $b1 = 0;
         switch (floor($hueSector)) {
@@ -187,5 +182,24 @@ class HSL extends Color {
         list($h, $s, $l) = $this->asArray();
 
         return new HSLA($h, $s, $l, $alpha);
+    }
+
+    public function asHSV(): HSV
+    {
+        // Convert HSL values to 0-1 range if needed
+        $h = $this->h / 360;
+        $s = $this->s / 100;
+        $l = $this->l / 100;
+
+        $q = ($l < 0.5) ? (1 + $s * (2 * $l - 1)) : (1 - $s * (1 - 2 * $l));
+
+        $saturation = $q <= 1 ? ($s / $q) : (2 * $s / (1 - $q));
+
+        $h = $h * 360;
+
+        $saturation *= 100;
+        $q *= 100;
+
+        return new HSV($h, $saturation, $q);
     }
 }
