@@ -64,7 +64,6 @@ class HSL extends Color
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asRGB()->findColorByAngle($angle)->asHSL();
         $angle = fmod(($angle + 360), 360);
 
         $newHue = fmod(($this->h + $angle + 360), 360);
