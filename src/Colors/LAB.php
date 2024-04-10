@@ -63,23 +63,16 @@ class LAB extends Color
 
     public function findColorByAngle(float $angle): self
     {
-        $chroma = sqrt($this->a * $this->a + $this->b * $this->b);
+        $angleRad = deg2rad($angle);
 
-        $hue = rad2deg(atan2($this->b, $this->a));
-        if ($this->a > 0 && $this->b >= 0) {
-            $hue;
-        } elseif ($this->a < 0 && $this->b >= 0) {
-            $hue += 180;
-        } elseif ($this->a < 0 && $this->b < 0) {
-            $hue += 180;
-        } else {
-            $hue += 360;
-        }
+        $magnitude = sqrt($this->a ** 2 + $this->b ** 2);
 
-        $newHue = fmod($hue + $angle, 360);
+        $currentAngleRad = atan2($this->b, $this->a);
 
-        $newA = $chroma * cos(deg2rad($newHue));
-        $newB = $chroma * sin(deg2rad($newHue));
+        $newAngleRad = $currentAngleRad + $angleRad;
+
+        $newA = $magnitude * cos($newAngleRad);
+        $newB = $magnitude * sin($newAngleRad);
 
         return new LAB($this->L, $newA, $newB);
     }
