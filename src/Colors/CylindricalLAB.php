@@ -56,7 +56,11 @@ class CylindricalLAB extends Color
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asLAB()->findColorByAngle($angle)->asCylindrical();
+        $hueChange = 180 * sin($angle);
+
+        $newHue = fmod(($this->h + $hueChange), 360);
+
+        return new CylindricalLAB($this->L, $this->c, $newHue);
     }
 
     public function findColorAtDifference(float $difference): self
@@ -111,8 +115,10 @@ class CylindricalLAB extends Color
 
     public function asLAB(): LAB
     {
-        $a = $this->c * cos($this->h);
-        $b = $this->c * sin($this->h);
+        $hRad = deg2rad($this->h);
+
+        $a = $this->c * cos($hRad);
+        $b = $this->c * sin($hRad);
 
         return new LAB($this->L, $a, $b);
     }
