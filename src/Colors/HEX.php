@@ -204,7 +204,7 @@ class HEX extends Color {
         return $this->asRGB()->asHSLA($alpha);
     }
 
-    public function asHSV(): hsv
+    public function asHSV(): HSV
     {
         return $this->asRGB()->asHSV();
     }
