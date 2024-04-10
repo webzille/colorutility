@@ -184,16 +184,16 @@ class HSV extends Color
     public function asRGB(): RGB
     {
         $h = $this->h / 360;
-        $s = max(0, min(1, $this->s));
-        $v = max(0, min(1, $this->v));
+        $s = $this->s / 100;
+        $v = $this->v / 100;
 
-        $i = floor($h * 6);
-        $f = $h * 6 - $i;
+        $h_i = floor($h * 6);
+        $f = $h * 6 - $h_i;
         $p = $v * (1 - $s);
         $q = $v * (1 - $f * $s);
         $t = $v * (1 - (1 - $f) * $s);
 
-        switch ($i % 6) {
+        switch ($h_i % 6) {
             case 0: $r = $v; $g = $t; $b = $p; break;
             case 1: $r = $q; $g = $v; $b = $p; break;
             case 2: $r = $p; $g = $v; $b = $t; break;
@@ -202,7 +202,11 @@ class HSV extends Color
             case 5: $r = $v; $g = $p; $b = $q; break;
         }
 
-        return new RGB(round($r * 255), round($g * 255), round($b * 255));
+        $r = ceil($r * 255);
+        $g = ceil($g * 255);
+        $b = ceil($b * 255);
+
+        return new RGB($r, $g, $b);
     }
 
     public function asHSLA(float $alpha = 1): HSLA
