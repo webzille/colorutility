@@ -48,13 +48,13 @@ Any named color is converted to their RGB variant. Each object has a `__toString
 You could also find tetradic colors, monochromatic tones/shades, complementary, triadic, analogous and split complementary colors of a the current color object.
 
 ```PHP
-$tetradicColors = $HexObject2->asHSL()->tetradicColors();
+$tetradicColors = $HexObject2->asHSL()->tetradic();
 echo $HexObject2->viewColor("Tetradic Colors of");
 foreach ($tetradicColors as $tetradicColor) {
     echo $tetradicColor->viewColor();
 }
 echo PHP_EOL;
-$tetradicColors2 = $HexObject2->asLAB()->tetradicColors();
+$tetradicColors2 = $HexObject2->asLAB()->tetradic();
 echo $HexObject2->viewColor("Tetradic Color in LAB (LAB converts to RGB since it isn't websafe)");
 foreach ($tetradicColors2 as $tetradicColor2) {
     echo $tetradicColor2->viewColor();
