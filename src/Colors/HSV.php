@@ -90,11 +90,12 @@ class HSV extends Color
 
     public function findColorByAngle(float $angle): self
     {
-        $currentHue = $this->h;
-        $newHue = (int) ($currentHue + $angle) % 360; // Adjust the hue by the angle
+        $newHue = $this->h + $angle;
 
-        if ($newHue < 0) {
-            $newHue += 360; // Ensure the hue is within the valid range (0 to 359)
+        $newHue = fmod(abs($newHue), 360);
+
+        if ($angle < 0) {
+            $newHue = 360 - $newHue;
         }
 
         return new HSV($newHue, $this->s, $this->v);
