@@ -141,7 +141,9 @@ class HSV extends Color
 
     public function angularDeviance(float $percent): self
     {
-        return $this->asLAB()->angularDeviance($percent)->asHSV();
+        $percent = ($percent > 200) ? ($percent - 200) / 100 : $percent / 100;
+
+        return $this->findColorByAngle(180 * $percent);
     }
 
     public function getHue(): float
@@ -181,49 +183,26 @@ class HSV extends Color
 
     public function asRGB(): RGB
     {
-        $h = $this->h / 60;
-        $s = $this->s / 100;
-        $v = $this->v / 100;
-        $i = floor($h);
-        $f = $h - $i;
-        $p = $v * (1 - $s);
-        $q = $v * (1 - $s * $f);
-        $t = $v * (1 - $s * (1 - $f));
+        $h = $this->h / 360;
+        $s = max(0, min(1, $this->s));
+        $v = max(0, min(1, $this->v));
 
-        switch ($i) {
-            case 0:
-                $r = $v * 255;
-                $g = $t * 255;
-                $b = $p * 255;
-                break;
-            case 1:
-                $r = $q * 255;
-                $g = $v * 255;
-                $b = $p * 255;
-                break;
-            case 2:
-                $r = $p * 255;
-                $g = $v * 255;
-                $b = $t * 255;
-                break;
-            case 3:
-                $r = $p * 255;
-                $g = $q * 255;
-                $b = $v * 255;
-                break;
-            case 4:
-                $r = $t * 255;
-                $g = $p * 255;
-                $b = $v * 255;
-                break;
-            default:
-                $r = $v * 255;
-                $g = $p * 255;
-                $b = $q * 255;
-                break;
+        $i = floor($h * 6);
+        $f = $h * 6 - $i;
+        $p = $v * (1 - $s);
+        $q = $v * (1 - $f * $s);
+        $t = $v * (1 - (1 - $f) * $s);
+
+        switch ($i % 6) {
+            case 0: $r = $v; $g = $t; $b = $p; break;
+            case 1: $r = $q; $g = $v; $b = $p; break;
+            case 2: $r = $p; $g = $v; $b = $t; break;
+            case 3: $r = $p; $g = $q; $b = $v; break;
+            case 4: $r = $t; $g = $p; $b = $v; break;
+            case 5: $r = $v; $g = $p; $b = $q; break;
         }
 
-        return new RGB($r, $g, $b);
+        return new RGB(round($r * 255), round($g * 255), round($b * 255));
     }
 
     public function asHSLA(float $alpha = 1): HSLA
@@ -233,20 +212,12 @@ class HSV extends Color
 
     public function asHSL(): HSL
     {
-    $h = $this->h / 360; // Normalize hue to the range [0, 1]
-    $s = $this->s / 100;
-    $v = $this->v / 100;
+        $s = $this->s / 100;
+        $v = $this->v / 100;
 
-    $l = (2 - $s) * $v / 2;
+        $l = (2 - $s) * $v / 2;
+        $s = $l == (0 ? 0 : $v <= 0.5) ? $s * $v / ($l * 2) : $s * $v / (2 - $l * 2);
 
-    if ($l != 0) {
-        if ($l < 0.5) {
-            $s = $s * $v / ($l * 2);
-        } else {
-            $s = $s * $v / (2 - $l * 2);
-        }
-    }
-
-    return new HSL($h * 360, $s * 100, $l * 100);
+        return new HSL($this->h, round($s * 100), round($l * 100));
     }
 }
