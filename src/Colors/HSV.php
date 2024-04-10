@@ -187,6 +187,10 @@ class HSV extends Color
         $s = $this->s / 100;
         $v = $this->v / 100;
 
+        if ($h < 0) {
+            $h += 360;
+        }
+
         $h_i = floor($h * 6);
         $f = $h * 6 - $h_i;
         $p = $v * (1 - $s);
@@ -216,12 +220,22 @@ class HSV extends Color
 
     public function asHSL(): HSL
     {
+        $h = fmod($this->h, 360);
+        if ($h < 0) {
+            $h += 360;
+        }
+
+        $hh = round($h, 2);
+
         $s = $this->s / 100;
         $v = $this->v / 100;
 
-        $l = (2 - $s) * $v / 2;
-        $s = $l == (0 ? 0 : $v <= 0.5) ? $s * $v / ($l * 2) : $s * $v / (2 - $l * 2);
+        $l = ($v * (2 - $s)) / 2;
 
-        return new HSL($this->h, round($s * 100), round($l * 100));
+        $s = ($l < 0.5) ? ($s * $v) / ($l * 2) : ($s * $v) / (2 - $l * 2);
+        $hs = round($s * 100, 2);
+        $hl = round($l * 100, 2);
+
+        return new HSL($hh, $hs, $hl);
     }
 }
