@@ -164,11 +164,9 @@ class RGB extends Color
 
     public function asHSL(): HSL
     {
-        list($r, $g, $b) = $this->asArray();
-
-        $r = $r / 255.0;
-        $g = $g / 255.0;
-        $b = $b / 255.0;
+        $r = $this->r / 255.0;
+        $g = $this->g / 255.0;
+        $b = $this->b / 255.0;
 
         $max = max($r, $g, $b);
         $min = min($r, $g, $b);
@@ -211,12 +209,12 @@ class RGB extends Color
 
     public function asHSV(): HSV
     {
-        $this->r /= 255;
-        $this->g /= 255;
-        $this->b /= 255;
+        $r = $this->r / 255;
+        $g = $this->g / 255;
+        $b = $this->b / 255;
 
-        $max = max($this->r, $this->g, $this->b);
-        $min = min($this->r, $this->g, $this->b);
+        $max = max($r, $g, $b);
+        $min = min($r, $g, $b);
 
         $v = $max;
 
@@ -229,12 +227,12 @@ class RGB extends Color
             $s = $delta / $v;
 
             $h = 0;
-            if ($max == $this->r) {
-                $h = 60 * fmod(($this->g - $this->b) / $delta, 6);
-            } elseif ($max == $this->g) {
-                $h = 60 * ((($this->b - $this->r) / $delta) + 2);
+            if ($max == $r) {
+                $h = 60 * fmod(($g - $b) / $delta, 6);
+            } elseif ($max == $g) {
+                $h = 60 * ((($b - $r) / $delta) + 2);
             } else {
-                $h = 60 * ((($this->r - $this->g) / $delta) + 4);
+                $h = 60 * ((($r - $g) / $delta) + 4);
             }
         }
 
