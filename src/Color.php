@@ -107,7 +107,7 @@ abstract class Color {
 
     abstract function angularDeviance(float $percent);
 
-    public function complementaryColors(): array
+    public function complementary(): array
     {
         // Rotate the base color by 180 degrees (180°)
         return [
@@ -115,7 +115,7 @@ abstract class Color {
         ];
     }
 
-    public function tetradicColors(): array
+    public function tetradic(): array
     {
         // Rotate the base color by 90 degrees (90°) for one color and 270 degrees (270°) for another
         return [
@@ -125,7 +125,7 @@ abstract class Color {
         ];
     }
 
-    public function splitComplementaryColors(): array
+    public function splitComplementary(): array
     {
         // Rotate the base color by 150 degrees (150°) and 210 degrees (210°)
         return [
@@ -134,7 +134,7 @@ abstract class Color {
         ];
     }
 
-    public function triadicColors(): array
+    public function triadic(): array
     {
         // Rotate the base color by 120 degrees (120°) and 240 degrees (240°)
         return [
@@ -143,7 +143,7 @@ abstract class Color {
         ];
     }
 
-    public function analogousColors(): array
+    public function analogous(): array
     {
         // Rotate the base color by 30 degrees (30°) in both directions
         return [
@@ -152,7 +152,7 @@ abstract class Color {
         ];
     }
 
-    public function monochromaticToneColors(): array
+    public function monochromaticTone(): array
     {
         // Generate a few different tones of the same color
         $monochromaticTones = [];
@@ -164,7 +164,7 @@ abstract class Color {
         return $monochromaticTones;
     }
 
-    public function monochromaticShadeColors(): array
+    public function monochromaticShade(): array
     {
         // Generate shades of the base color by adjusting the lightness
         $monochromaticShades = [];
