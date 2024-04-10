@@ -34,7 +34,7 @@ class HSL extends Color
 
     public function isLight(): bool
     {
-        return $this->l >= 50;
+        return $this->asRGB()->isLight();
     }
 
     public function white(): self
@@ -64,7 +64,15 @@ class HSL extends Color
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asHSV()->findColorByAngle($angle)->asHSL();
+        $newHue = ($this->h + $angle) % 360;
+
+        if ($newHue < 0) {
+            $newHue += 360;
+        }
+
+        $traditionalHue = $newHue;
+
+        return new self($traditionalHue, $this->s, $this->l);
     }
 
     public function findColorAtDifference(float $difference): self
@@ -186,20 +194,15 @@ class HSL extends Color
 
     public function asHSV(): HSV
     {
-        // Convert HSL values to 0-1 range if needed
-        $h = $this->h / 360;
         $s = $this->s / 100;
         $l = $this->l / 100;
 
-        $q = ($l < 0.5) ? (1 + $s * (2 * $l - 1)) : (1 - $s * (1 - 2 * $l));
+        $v = $l + $s * min($l, 1 - $l);
+        $s = $v == 0 ? 0 : 2 * (1 - $l / $v);
 
-        $saturation = $q <= 1 ? ($s / $q) : (2 * $s / (1 - $q));
+        $s *= 100;
+        $v *= 100;
 
-        $h = $h * 360;
-
-        $saturation *= 100;
-        $q *= 100;
-
-        return new HSV($h, $saturation, $q);
+        return new HSV($this->h, $s, $v);
     }
 }
