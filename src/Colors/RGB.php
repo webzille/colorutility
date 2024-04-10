@@ -171,35 +171,32 @@ class RGB extends Color
         $max = max($r, $g, $b);
         $min = min($r, $g, $b);
 
-        $lum = ($max + $min) / 2.0;
-        $hue = 0.0;
-        $sat = 0.0;
+        $l = ($max + $min) / 2.0;
 
-        if ($max != $min) {
-            $c = $max - $min;
-
-            $sat = $c / (1.0 - abs(2.0 * $lum - 1.0));
-
-            switch ($max) {
-                case $r:
-                    $hue = ($g - $b) / $c;
-                    break;
-                case $g:
-                    $hue = ($b - $r) / $c + 2.0;
-                    break;
-                case $b:
-                    $hue = ($r - $g) / $c + 4.0;
-                    break;
-            }
-
-            $hue = ($hue < 0.0 ? $hue + 6.0 : $hue);
+        if (abs($max - $min) < 0.00001) {
+            return new HSL(0, 0, round($l * 100));
         }
 
-        $hue = round($hue * 60.0);
-        $sat = round($sat * 100.0);
-        $lum = round($lum * 100.0);
+        if ($l < 0.5) {
+            $s = ($max - $min) / ($max + $min);
+        } else {
+            $s = ($max - $min) / (2.0 - $max - $min);
+        }
 
-        return new HSL($hue, $sat, $lum);
+        if ($max === $r) {
+            $h = 60.0 * (($g - $b) / ($max - $min));
+        } elseif ($max === $g) {
+            $h = 60.0 * (($b - $r) / ($max - $min) + 2.0);
+        } elseif ($max === $b) {
+            $h = 60.0 * (($r - $g) / ($max - $min) + 4.0);
+        }
+
+        $h = round($h < 0 ? $h + 360 : ($h >= 360 ? $h - 360 : $h));
+
+        $s = round($s * 100);
+        $l = round($l * 100);
+
+        return new HSL($h, $s, $l);
     }
 
     public function asHSLA(float $alpha = 1): HSLA
