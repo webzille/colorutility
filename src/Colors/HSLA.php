@@ -37,7 +37,7 @@ class HSLA extends Color {
 
     public function isLight(): bool
     {
-        return $this->alpha < 0.4 ?: $this->l >= 50;
+        return $this->asRGBA()->isLight();
     }
 
     public function white(): self
@@ -189,20 +189,6 @@ class HSLA extends Color {
 
     public function asHSV(): HSV
     {
-        // Convert HSL values to 0-1 range if needed
-        $h = $this->h / 360;
-        $s = $this->s / 100;
-        $l = $this->l / 100;
-
-        $q = ($l < 0.5) ? (1 + $s * (2 * $l - 1)) : (1 - $s * (1 - 2 * $l));
-
-        $saturation = $q <= 1 ? ($s / $q) : (2 * $s / (1 - $q));
-
-        $h = $h * 360;
-
-        $saturation *= 100;
-        $q *= 100;
-
-        return new HSV($h, $saturation, $q);
+        return $this->asHSL()->asHSV();
     }
 }
