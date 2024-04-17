@@ -70,14 +70,14 @@ class HSLA extends Color {
         return $this->asHSV()->findColorByAngle($angle)->asHSLA();
     }
 
-    public function findColorAtDifference(float $difference): self
+    public function findColorAtDifference(float $difference, int $direction = 1): self
     {
-        return $this->asLAB()->findColorAtDifference($difference)->asHSLA();
+        return $this->asLAB()->findColorAtDifference($difference, $direction)->asHSLA();
     }
 
-    public function findColorAtDistance(float $distance): self
+    public function findColorAtDistance(float $distance, int $direction = 1): self
     {
-        return $this->asLAB()->findColorAtDistance($distance)->asHSLA();
+        return $this->asLAB()->findColorAtDistance($distance, $direction)->asHSLA();
     }
 
     public function findColorByShade(int $shade): self
