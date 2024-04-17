@@ -111,14 +111,14 @@ class HEX extends Color {
         return $this->asHSV()->findColorByAngle($angle)->asHEX();
     }
 
-    public function findColorAtDifference(float $difference): self
+    public function findColorAtDifference(float $difference, int $direction = 1): self
     {
-        return $this->asLAB()->findColorAtDifference($difference)->asHEX();
+        return $this->asLAB()->findColorAtDifference($difference, $direction)->asHEX();
     }
 
-    public function findColorAtDistance(float $distance): self
+    public function findColorAtDistance(float $distance, int $direction = 1): self
     {
-        return $this->asLAB()->findColorAtDistance($distance)->asHEX();
+        return $this->asLAB()->findColorAtDistance($distance, $direction)->asHEX();
     }
 
     public function findColorByShade(int $shade): self
