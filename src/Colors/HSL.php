@@ -71,14 +71,14 @@ class HSL extends Color
         return new HSL($newHue, $this->s, $this->l);
     }
 
-    public function findColorAtDifference(float $difference): self
+    public function findColorAtDifference(float $difference, int $direction = 1): self
     {
-        return $this->asLAB()->findColorAtDifference($difference)->asHSL();
+        return $this->asLAB()->findColorAtDifference($difference, $direction)->asHSL();
     }
 
-    public function findColorAtDistance(float $distance): self
+    public function findColorAtDistance(float $distance, int $direction = 1): self
     {
-        return $this->asLAB()->findColorAtDistance($distance)->asHSL();
+        return $this->asLAB()->findColorAtDistance($distance, $direction)->asHSL();
     }
 
     public function findColorByShade(int $shade): self
