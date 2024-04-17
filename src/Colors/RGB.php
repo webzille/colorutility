@@ -55,6 +55,42 @@ class RGB extends Color
     public function digitalDistance(Color $color): float
     {
         return $this->asLAB()->digitalDistance($color);
+        list($r1, $g1, $b1) = $this->asArray();
+        list($r2, $g2, $b2) = $color->asRGB()->asArray();
+
+        return sqrt(
+            pow(($r2 - $r1), 2) +
+                pow(($g2 - $g1), 2) +
+                pow(($b2 - $b1), 2)
+        );
+    }
+
+    public function findColorAtDistance(float $distance): RGB
+    {
+        return $this->asLAB()->findColorAtDistance($distance)->asRGB();
+
+        $originalColor = $this->asRGB();
+        $tolerance = 0.1;
+        $maxIterations = 10000;
+
+        for ($i = 0; $i < $maxIterations; $i++) {
+            $rAdjustment = rand(-$distance, $distance);
+            $gAdjustment = rand(-$distance, $distance);
+            $bAdjustment = rand(-$distance, $distance);
+
+            $newR = max(0, min(255, $originalColor->r + $rAdjustment));
+            $newG = max(0, min(255, $originalColor->g + $gAdjustment));
+            $newB = max(0, min(255, $originalColor->b + $bAdjustment));
+
+            $newColor = new RGB($newR, $newG, $newB);
+            $newDistance = $originalColor->digitalDistance($newColor);
+
+            if (abs($newDistance - $distance) <= $tolerance) {
+                return $newColor;
+            }
+        }
+
+        return $originalColor;
     }
 
     public function visibleDifference(Color $color): float
@@ -70,11 +106,6 @@ class RGB extends Color
     public function findColorAtDifference(float $difference): self
     {
         return $this->asLAB()->findColorAtDifference($difference)->asRGB();
-    }
-
-    public function findColorAtDistance(float $distance): self
-    {
-        return $this->asLAB()->findColorAtDistance($distance)->asRGB();
     }
 
     public function findColorByShade(int $shade): self
@@ -120,19 +151,19 @@ class RGB extends Color
     {
         list($x, $y, $z) = $this->asXYZ();
 
-        $x /= 95.047;
-        $y /= 100.000;
-        $z /= 108.883;
+        $fx = $x > 0.008856 ? pow($x, 1 / 3) : (7.787 * $x) + (16 / 116);
+        $fy = $y > 0.008856 ? pow($y, 1 / 3) : (7.787 * $y) + (16 / 116);
+        $fz = $z > 0.008856 ? pow($z, 1 / 3) : (7.787 * $z) + (16 / 116);
 
-        $x = $x > 0.008856 ? pow($x, 1 / 3) : (7.787 * $x + 16 / 116);
-        $y = $y > 0.008856 ? pow($y, 1 / 3) : (7.787 * $y + 16 / 116);
-        $z = $z > 0.008856 ? pow($z, 1 / 3) : (7.787 * $z + 16 / 116);
+        $l = (116 * $fy) - 16;
+        $a = 500 * ($fx - $fy);
+        $b = 200 * ($fy - $fz);
 
-        $L = max(0, 116 * $y - 16);
-        $a = 500 * ($x - $y);
-        $b = 200 * ($y - $z);
-
-        return new LAB($L, $a, $b);
+        return new LAB(
+            round($l, 2),
+            round($a, 2),
+            round($b, 2)
+        );
     }
 
     public function asXYZ(): array
@@ -141,13 +172,17 @@ class RGB extends Color
         $g = $this->g / 255;
         $b = $this->b / 255;
 
-        $r = (($r > 0.04045) ? pow(($r + 0.055) / 1.055, 2.4) : $r / 12.92) * 100;
-        $g = (($g > 0.04045) ? pow(($g + 0.055) / 1.055, 2.4) : $g / 12.92) * 100;
-        $b = (($b > 0.04045) ? pow(($b + 0.055) / 1.055, 2.4) : $b / 12.92) * 100;
+        $r = $r > 0.04045 ? pow(($r + 0.055) / 1.055, 2.4) : $r / 12.92;
+        $g = $g > 0.04045 ? pow(($g + 0.055) / 1.055, 2.4) : $g / 12.92;
+        $b = $b > 0.04045 ? pow(($b + 0.055) / 1.055, 2.4) : $b / 12.92;
 
         $x = $r * 0.4124564 + $g * 0.3575761 + $b * 0.1804375;
         $y = $r * 0.2126729 + $g * 0.7151522 + $b * 0.0721750;
         $z = $r * 0.0193339 + $g * 0.1191920 + $b * 0.9503041;
+
+        $x /= 0.95047;
+        $y /= 1.00000;
+        $z /= 1.08883;
 
         return [$x, $y, $z];
     }
