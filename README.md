@@ -80,3 +80,5 @@ echo $alphaRGBA->asHEX()->viewColor("As HEX");
 ```
 
 After generating new colors based on distance/difference in the LAB colorspace, the newly generated color (after conversion) will show a different distance/difference from the reference color than the requested distance/difference because of rounding errors and the fact that LAB color space has a wider color gamut than RGB. LAB simply has a wider range of colors that it can produce so not every possible color that it generates converts to RGB. (Which is why both LAB(91.11, -128, -128) and LAB(91, -48, -14) converts to rgb(0, 255, 255)).
+
+When LAB converts the RGB I have it so it rounds to the nearest hundredths place for accuracy if you ever need to convert back to LAB from RGB.
