@@ -54,9 +54,19 @@ class RGBA extends Color {
         return $this->asHSV()->calculateAngle($color);
     }
 
+    public function findColorByAngle(float $angle): self
+    {
+        return $this->asHSV()->findColorByAngle($angle)->asRGBA($this->alpha);
+    }
+
     public function digitalDistance(Color $color): float
     {
-        return $this->asLAB()->digitalDistance($color);
+        return $this->asRGB()->digitalDistance($color);
+    }
+
+    public function findColorAtDistance(float $distance, int $direction = 1): RGBA
+    {
+        return $this->asRGB()->findColorAtDistance($distance, $direction)->asRGBA();
     }
 
     public function visibleDifference(Color $color): float
@@ -64,19 +74,9 @@ class RGBA extends Color {
         return $this->asLAB()->visibleDifference($color);
     }
 
-    public function findColorByAngle(float $angle): self
+    public function findColorAtDifference(float $difference, int $direction = 1): self
     {
-        return $this->asHSV()->findColorByAngle($angle)->asRGBA($this->alpha);
-    }
-
-    public function findColorAtDifference(float $difference): self
-    {
-        return $this->asLAB()->findColorAtDifference($difference)->asRGBA($this->alpha);
-    }
-
-    public function findColorAtDistance(float $distance): RGBA
-    {
-        return $this->asLAB()->findColorAtDistance($distance)->asRGBA();
+        return $this->asLAB()->findColorAtDifference($difference, $direction)->asRGBA($this->alpha);
     }
 
     public function findColorByShade(int $shade): self
