@@ -28,7 +28,11 @@ class LAB extends Color
 
     public function asString(): string
     {
-        return "LAB({$this->L}, {$this->a}, {$this->b})";
+        $L = round($this->L);
+        $a = round($this->a);
+        $b = round($this->b);
+
+        return "LAB({$L}, {$a}, {$b})";
     }
 
     public function isLight(): bool
@@ -82,90 +86,90 @@ class LAB extends Color
         list($L1, $a1, $b1) = $this->asArray();
         list($L2, $a2, $b2) = $color->asLAB()->asArray();
 
-        return sqrt((($L2 - $L1) ** 2) + (($a2 - $a1) ** 2) + (($b2 - $b1) ** 2));
+        $distance = sqrt((($L2 - $L1) ** 2) + (($a2 - $a1) ** 2) + (($b2 - $b1) ** 2));
+
+        return $distance;
     }
 
-    public function findColorAtDistance(float $distance): LAB
+    public function findColorAtDistance(float $distance, float $tolerance = 0.1, int $maxIterations = 10000): LAB
     {
-        $tolerance = 0.5;
+        list($L1, $a1, $b1) = $this->asArray();
 
-        $bestDistance = PHP_FLOAT_MAX;
-        $bestColor = clone $this;
+        $minScale = 0.1;
 
-        $currentStepSize = 128;
+        for ($i = 0; $i < $maxIterations; $i++) {
+            $adjustment = [
+                'L' => mt_rand(-100, 100) / 100,
+                'a' => mt_rand(-100, 100) / 100,
+                'b' => mt_rand(-100, 100) / 100,
+            ];
 
-        for ($i = 0; $i < 5000; $i++) {
-            $midpoint = clone $bestColor;
+            $newL = max(0, min(100, $L1 + $adjustment['L']));
+            $newA = max(-128, min(127, $a1 + $adjustment['a']));
+            $newB = max(-128, min(127, $b1 + $adjustment['b']));
 
-            $LAdjustment = rand((int) -$currentStepSize, (int) $currentStepSize);
-            $aAdjustment = rand((int) -$currentStepSize, (int) $currentStepSize);
-            $bAdjustment = rand((int) -$currentStepSize, (int) $currentStepSize);
+            $newColor = new LAB($newL, $newA, $newB);
+            $newDistance = $this->digitalDistance($newColor);
 
-            $midpoint->L = max(0, min(100, $midpoint->L + $LAdjustment));
-            $midpoint->a = max(-128, min(127, $midpoint->a + $aAdjustment));
-            $midpoint->b = max(-128, min(127, $midpoint->b + $bAdjustment));
+            $distanceDiff = abs($newDistance - $distance);
 
-            $digitalDistance = $this->digitalDistance($midpoint);
+            $scaleFactor = $minScale + ($distance - $minScale) * ($distanceDiff / $distance);
 
-            if (abs($digitalDistance - $distance) < $tolerance) {
-                return $midpoint;
+            if ($distanceDiff <= $tolerance) {
+                return $newColor;
             }
 
-            if (abs($digitalDistance - $distance) < abs($bestDistance - $distance)) {
-                $bestDistance = $digitalDistance;
-                $bestColor = clone $midpoint;
-            }
-
-            $stepAdjustment = 2 + ($digitalDistance - $distance) / 950;
-            $currentStepSize *= $stepAdjustment;
-
-            $currentStepSize = max(1, min(128, $currentStepSize));
+            $L1 = max(0, min(100, $L1 + $adjustment['L'] * $scaleFactor));
+            $a1 = max(-128, min(127, $a1 + $adjustment['a'] * $scaleFactor));
+            $b1 = max(-128, min(127, $b1 + $adjustment['b'] * $scaleFactor));
         }
-
-        return $bestColor;
+        
+        return new LAB($L1, $a1, $b1);
     }
 
     public function visibleDifference(Color $color): float
     {
-        return (new DeltaE2000)->calculate($this, $color->asLAB());
+        $difference = (new DeltaE2000)->calculate($this, $color->asLAB());
+
+        return $difference;
     }
 
-    public function findColorAtDifference(float $difference): self
+    public function findColorAtDifference(float $difference, float $tolerance = 0.1, int $maxIterations = 10000): self
     {
-        $tolerance = 0.5;
+        list($L1, $a1, $b1) = $this->asArray();
 
-        $bestDeltaE = PHP_FLOAT_MAX;
-        $bestColor = clone $this;
+        $minScale = 0.1;
 
-        $currentStepSize = 128;
+        $difference = ($difference > 100) ? $difference - 100 : $difference;
 
-        for ($i = 0; $i < 5000; $i++) {
-            $midpoint = clone $bestColor;
+        for ($i = 0; $i < $maxIterations; $i++) {
+            $adjustment = [
+                'L' => mt_rand(-100, 100) / 100,
+                'a' => mt_rand(-100, 100) / 100,
+                'b' => mt_rand(-100, 100) / 100,
+            ];
 
-            $aAdjustment = rand((int) -$currentStepSize, (int) $currentStepSize);
-            $bAdjustment = rand((int) -$currentStepSize, (int) $currentStepSize);
+            $newL = max(0, min(100, $L1 + $adjustment['L']));
+            $newA = max(-128, min(127, $a1 + $adjustment['a']));
+            $newB = max(-128, min(127, $b1 + $adjustment['b']));
 
-            $midpoint->a = max(-128, min(127, $midpoint->a + $aAdjustment));
-            $midpoint->b = max(-128, min(127, $midpoint->b + $bAdjustment));
+            $newColor = new LAB($newL, $newA, $newB);
+            $newDistance = $this->visibleDifference($newColor);
 
-            $deltaE = $this->visibleDifference($midpoint);
+            $distanceDiff = abs($newDistance - $difference);
 
-            if (abs($deltaE - $difference) < $tolerance) {
-                return $midpoint;
+            $scaleFactor = $minScale + ($difference - $minScale) * ($distanceDiff / $difference);
+
+            if ($distanceDiff <= $tolerance) {
+                return $newColor;
             }
 
-            if (abs($deltaE - $difference) < abs($bestDeltaE - $difference)) {
-                $bestDeltaE = $deltaE;
-                $bestColor = clone $midpoint;
-            }
-
-            $stepAdjustment = 2 + ($deltaE - $difference) / 950;
-            $currentStepSize *= $stepAdjustment;
-
-            $currentStepSize = max(1, min(128, $currentStepSize));
+            $L1 = max(0, min(100, $L1 + $adjustment['L'] * $scaleFactor));
+            $a1 = max(-128, min(127, $a1 + $adjustment['a'] * $scaleFactor));
+            $b1 = max(-128, min(127, $b1 + $adjustment['b'] * $scaleFactor));
         }
-
-        return $bestColor;
+        
+        return new LAB($L1, $a1, $b1);
     }
 
     public function linearDeviance(float $percent): self
@@ -229,20 +233,15 @@ class LAB extends Color
         $g = $x * -0.9689 + $y *  1.8758 + $z *  0.0415;
         $b = $x *  0.0557 + $y * -0.2040 + $z *  1.0570;
 
-        $r = $r > 0.0031308 ? 1.055 * pow($r, 1 / 2.4) - 0.055 : 12.92 * $r;
-        $g = $g > 0.0031308 ? 1.055 * pow($g, 1 / 2.4) - 0.055 : 12.92 * $g;
-        $b = $b > 0.0031308 ? 1.055 * pow($b, 1 / 2.4) - 0.055 : 12.92 * $b;
+        $r = ($r > 0.0031308) ? ((1.055 * ($r ** (1 / 2.4))) - 0.055) : ($r * 12.92);
+        $g = ($g > 0.0031308) ? ((1.055 * ($g ** (1 / 2.4))) - 0.055) : ($g * 12.92);
+        $b = ($b > 0.0031308) ? ((1.055 * ($b ** (1 / 2.4))) - 0.055) : ($b * 12.92);
 
-        $r = round(max(0, min(255, $r * 255)));
-        $g = round(max(0, min(255, $g * 255)));
-        $b = round(max(0, min(255, $b * 255)));
-
-        return new RGB($r, $g, $b);
-    }
-
-    public function asRGBA(float $alpha = 1): RGBA
-    {
-        return $this->asRGB()->asRGBA($alpha);
+        return new RGB(
+            round(max(0, min(255, $r * 255)) * 100) / 100,
+            round(max(0, min(255, $g * 255)) * 100) / 100,
+            round(max(0, min(255, $b * 255)) * 100) / 100
+        );
     }
 
     public function asXYZ(): array
@@ -251,11 +250,24 @@ class LAB extends Color
         $x = $this->a / 500 + $y;
         $z = $y - $this->b / 200;
 
-        $x = 0.95047 * (($x ** 3) > 0.008856 ? $x ** 3 : ($x - 16 / 116) / 7.787);
-        $y = 1.00000 * (($y ** 3) > 0.008856 ? $y ** 3 : ($y - 16 / 116) / 7.787);
-        $z = 1.08883 * (($z ** 3) > 0.008856 ? $z ** 3 : ($z - 16 / 116) / 7.787);
+        $x3 = $x ** 3;
+        $y3 = $y ** 3;
+        $z3 = $z ** 3;
+
+        $x = ($x3 > 0.008856) ? $x3 : ($x - 16 / 116) / 7.787;
+        $y = ($y3 > 0.008856) ? $y3 : ($y - 16 / 116) / 7.787;
+        $z = ($z3 > 0.008856) ? $z3 : ($z - 16 / 116) / 7.787;
+
+        $x *= 0.95047;
+        $y *= 1.00000;
+        $z *= 1.08883;
 
         return [$x, $y, $z];
+    }
+
+    public function asRGBA(float $alpha = 1): RGBA
+    {
+        return $this->asRGB()->asRGBA($alpha);
     }
 
     public function xyzToLAB($xyz): self
