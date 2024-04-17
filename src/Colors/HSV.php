@@ -67,20 +67,7 @@ class HSV extends Color
 
     public function digitalDistance(Color $color): float
     {
-        $color = $color->asHSV();
-
-        $hueDiff = abs($this->h - $color->getHue());
-        if ($hueDiff > 180) {
-            $hueDiff = 360 - $hueDiff;
-        }
-
-        $hueDistance = min($hueDiff, 360 - $hueDiff);
-        $saturationDistance = abs($this->s - $color->getSaturation());
-        $valueDistance = abs($this->v - $color->getValue());
-
-        $totalDistance = ($hueDistance + $saturationDistance + $valueDistance) / 6;
-
-        return $totalDistance;
+        return $this->asLAB()->digitalDistance($color);
     }
 
     public function visibleDifference(Color $color): float
@@ -101,32 +88,14 @@ class HSV extends Color
         return new HSV($newHue, $this->s, $this->v);
     }
 
-    public function findColorAtDifference(float $difference): self
+    public function findColorAtDifference(float $difference, int $direction = 1): self
     {
-        return $this->asLAB()->findColorAtDifference($difference)->asHSV();
+        return $this->asLAB()->findColorAtDifference($difference, $direction)->asHSV();
     }
 
-    public function findColorAtDistance(float $distance): self
+    public function findColorAtDistance(float $distance, int $direction = 1): self
     {
-        $saturationWeight = 1.0;
-        $valueWeight = 1.0;
-
-        $distance = min(1, max(0, $distance));
-
-        $randomAngle = rand(0, 360);
-
-        $totalWeight = $saturationWeight + $valueWeight;
-        $hueDistance = $distance * $saturationWeight / $totalWeight;
-        $saturationDistance = $distance * (1 - $saturationWeight) / 2;
-        $valueDistance = $distance * (1 - $valueWeight) / 2;
-
-        $hueShift = $hueDistance * cos(deg2rad($randomAngle));
-        $newHue = fmod($this->h + $hueShift, 360);
-
-        $newSaturation = max(0, min(100, $this->s + ($saturationDistance * (rand(0, 1) ? 1 : -1))));
-        $newValue = max(0, min(100, $this->v + ($valueDistance * (rand(0, 1) ? 1 : -1))));
-
-        return new HSV($newHue, $newSaturation, $newValue);
+        return $this->asLAB()->findColorAtDistance($distance, $direction)->asHSV();
     }
 
     public function findColorByShade(int $shade): self
