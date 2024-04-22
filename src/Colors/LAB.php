@@ -320,4 +320,9 @@ class LAB extends Color
     {
         return $this->asRGB()->asHSV();
     }
+
+    public function asRYB(): RYB
+    {
+        return $this->asRGB()->asRYB();
+    }
 }
