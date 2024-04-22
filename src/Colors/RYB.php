@@ -2,7 +2,6 @@
 
 namespace Webzille\ColorUtility\Colors;
 
-use Exception;
 use Webzille\ColorUtility\Color;
 
 class RYB extends Color {
