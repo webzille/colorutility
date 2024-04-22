@@ -24,8 +24,8 @@ class RYB extends Color {
         [43, 234, 69, 210],             // 210 Green-Yellow
         [0, 255, 0, 240],               // 240 Yellow
         [79, 250, 0, 270],              // 270 Yellow-Orange
-        [166.66666666667, 250, 0, 300], // 300 Orange
-        [250, 150.64102564103, 0, 330], // 330 Orange-Red
+        [167, 250, 0, 300],             // 300 Orange
+        [250, 167, 0, 330],             // 330 Orange-Red
     ];
 
     function __construct($r, $y, $b)
