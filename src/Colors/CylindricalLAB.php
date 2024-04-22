@@ -63,14 +63,14 @@ class CylindricalLAB extends Color
         return new CylindricalLAB($this->L, $this->c, $newHue);
     }
 
-    public function findColorAtDifference(float $difference, int $direction = 1): self
+    public function findColorAtDifference(float $difference): self
     {
-        return $this->asLAB()->findColorAtDifference($difference, $direction)->asCylindrical();
+        return $this->asLAB()->findColorAtDifference($difference)->asCylindrical();
     }
 
-    public function findColorAtDistance(float $distance, int $direction = 1): self
+    public function findColorAtDistance(float $distance): self
     {
-        return $this->asLAB()->findColorAtDistance($distance, $direction)->asCylindrical();
+        return $this->asLAB()->findColorAtDistance($distance)->asCylindrical();
     }
 
     public function findColorByShade(int $shade): self
@@ -151,5 +151,10 @@ class CylindricalLAB extends Color
     public function asHSV(): HSV
     {
         return $this->asRGB()->asHSV();
+    }
+
+    public function asRYB(): RYB
+    {
+        return $this->asRGB()->asRYB();
     }
 }
