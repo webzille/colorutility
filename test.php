@@ -91,8 +91,6 @@ echo $alphaRGBA->viewColor("Transparency Here");
 echo $alphaRGBA->asHSLA()->viewColor("As HSLA");
 echo $alphaRGBA->asHEX()->viewColor("As HEX");
 
-$namedColors = require "./src/NamedColorsLookupTable.php";
-
 echo PHP_EOL;
 
 $colorString = 'turquoise';
