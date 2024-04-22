@@ -85,7 +85,6 @@ class RYB extends Color {
         $bestDistance = PHP_FLOAT_MAX;
         $newColor = new RYB(255, 0, 0);
         $bestAngle = 0;
-        $tolerance = 28;
 
         foreach ($this->colorWheel as $colorData) {
             $colorObject = new RYB(...$colorData);
@@ -108,20 +107,23 @@ class RYB extends Color {
         $color2 = new RYB(...$this->colorWheel[($segmentIndex + 1) % count($this->colorWheel)]);
         $currentDistance = PHP_INT_MAX;
         
-        $i = 0;
+        $tolerance = 1.3;
+        $step = $i = 0.15;
         while ($bestDistance > $tolerance && $i < 360) {
-            $testAngle = ($bestAngle + $i) % 360;
+            $testAngle = ($bestAngle + $i);
+            if ($testAngle > 360) {
+                $testAngle -= 360;
+            }
+
             $weight = ((int) $testAngle % (360 / count($this->colorWheel))) / (360 / count($this->colorWheel));
-            
             $newColor = $this->blendColors($color1, $color2, $weight);
-            
             $currentDistance = $this->digitalDistance($this->normalizeColor($newColor));
             
             if ($currentDistance < $bestDistance) {
                 $bestDistance = $currentDistance;
                 $bestAngle = $testAngle;
             }
-            $i++;
+            $i += $step;
         }
 
         return $bestAngle;
@@ -147,7 +149,6 @@ class RYB extends Color {
         $color2 = new RYB(...$this->colorWheel[($segmentIndex + 1) % count($this->colorWheel)]);
         
         $newColor = $this->blendColors($color1, $color2, $weight);
-
         return $this->normalizeColor($newColor);
     }
 
