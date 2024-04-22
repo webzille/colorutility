@@ -49,12 +49,12 @@ class RGB extends Color
 
     public function calculateAngle(Color $color): float
     {
-        return $this->asHSV()->calculateAngle($color);
+        return $this->asRYB()->calculateAngle($color);
     }
 
     public function digitalDistance(Color $color): float
     {
-        return $this->asLAB()->digitalDistance($color);
+        //return $this->asLAB()->digitalDistance($color);
         list($r1, $g1, $b1) = $this->asArray();
         list($r2, $g2, $b2) = $color->asRGB()->asArray();
 
@@ -100,7 +100,7 @@ class RGB extends Color
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asHSV()->findColorByAngle($angle)->asRGB();
+        return $this->asRYB()->findColorByAngle($angle)->asRGB();
     }
 
     public function findColorAtDifference(float $difference): self
@@ -274,5 +274,43 @@ class RGB extends Color
         $v *= 100;
 
         return new HSV($h, $s, $v);
+    }
+
+    function asRYB(): RYB
+    {
+        list($r, $g, $b) = $this->asArray();
+
+        $w = min($r, $g, $b);
+        $r -= $w;
+        $g -= $w;
+        $b -= $w;
+
+        $mg = max($r, $g, $b);
+
+        $y = min($r, $g);
+        $r -= $y;
+        $g -= $y;
+
+        if ($b && $g) {
+            $b /= 2.0;
+            $g /= 2.0;
+        }
+
+        $y += $g;
+        $b += $g;
+
+        $my = max($r, $y, $b);
+        if ($my) {
+            $n = $mg / $my;
+            $r *= $n;
+            $y *= $n;
+            $b *= $n;
+        }
+
+        $r += $w;
+        $y += $w;
+        $b += $w;
+
+        return new RYB($r, $y, $b);
     }
 }
