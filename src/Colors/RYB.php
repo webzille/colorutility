@@ -107,7 +107,7 @@ class RYB extends Color {
         $color2 = new RYB(...$this->colorWheel[($segmentIndex + 1) % count($this->colorWheel)]);
         $currentDistance = PHP_INT_MAX;
         
-        $tolerance = 1.3;
+        $tolerance = 5;
         $step = $i = 0.15;
         while ($bestDistance > $tolerance && $i < 360) {
             $testAngle = ($bestAngle + $i);
@@ -278,5 +278,10 @@ class RYB extends Color {
     public function asHSV(): HSV
     {
         return $this->asRGB()->asHSV();
+    }
+
+    public function asHEX(): HEX
+    {
+        return $this->asRGB()->asHEX();
     }
 }
