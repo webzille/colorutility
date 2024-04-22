@@ -10,19 +10,6 @@ use Webzille\ColorUtility\SetColor;
 
 echo "<pre>";
 
-/* echo (new RYB(255, 0, 0))->asRGB();
-echo (new RYB(167, 25, 75))->asRGB();
-echo (new RYB(135, 0, 175))->asRGB();
-echo (new RYB(61, 0, 165))->asRGB();
-echo (new RYB(0, 0, 255))->asRGB();
-echo (new RYB(3, 87, 206))->asRGB();
-echo (new RYB(0, 255, 255))->asRGB();
-echo (new RYB(43, 234, 69))->asRGB();
-echo (new RYB(0, 255, 0))->asRGB();
-echo (new RYB(79, 250, 0))->asRGB();
-echo (new RYB(166.66666666667, 250, 0))->asRGB();
-echo (new RYB(250, 150.64102564103, 0))->asRGB(); */
-
 $object = new rgb(255, 0, 0);
 echo $object->viewColor("Current Color:");
 echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
