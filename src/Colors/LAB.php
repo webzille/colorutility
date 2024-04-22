@@ -86,9 +86,7 @@ class LAB extends Color
         list($L1, $a1, $b1) = $this->asArray();
         list($L2, $a2, $b2) = $color->asLAB()->asArray();
 
-        $distance = sqrt((($L2 - $L1) ** 2) + (($a2 - $a1) ** 2) + (($b2 - $b1) ** 2));
-
-        return $distance;
+        return sqrt((($L2 - $L1) ** 2) + (($a2 - $a1) ** 2) + (($b2 - $b1) ** 2));
     }
 
     public function findColorAtDistance(float $distance, float $tolerance = 0.1, int $maxIterations = 10000): LAB
@@ -129,9 +127,7 @@ class LAB extends Color
 
     public function visibleDifference(Color $color): float
     {
-        $difference = (new DeltaE2000)->calculate($this, $color->asLAB());
-
-        return $difference;
+        return (new DeltaE2000)->calculate($this, $color->asLAB());
     }
 
     public function findColorAtDifference(float $difference, float $tolerance = 0.1, int $maxIterations = 10000): self
