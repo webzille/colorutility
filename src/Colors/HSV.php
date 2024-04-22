@@ -88,14 +88,14 @@ class HSV extends Color
         return new HSV($newHue, $this->s, $this->v);
     }
 
-    public function findColorAtDifference(float $difference, int $direction = 1): self
+    public function findColorAtDifference(float $difference): self
     {
-        return $this->asLAB()->findColorAtDifference($difference, $direction)->asHSV();
+        return $this->asLAB()->findColorAtDifference($difference)->asHSV();
     }
 
-    public function findColorAtDistance(float $distance, int $direction = 1): self
+    public function findColorAtDistance(float $distance): self
     {
-        return $this->asLAB()->findColorAtDistance($distance, $direction)->asHSV();
+        return $this->asLAB()->findColorAtDistance($distance)->asHSV();
     }
 
     public function findColorByShade(int $shade): self
@@ -206,5 +206,10 @@ class HSV extends Color
         $hl = round($l * 100, 2);
 
         return new HSL($hh, $hs, $hl);
+    }
+
+    public function asRYB(): RYB
+    {
+        return $this->asRGB()->asRYB();
     }
 }
