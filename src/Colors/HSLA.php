@@ -52,7 +52,7 @@ class HSLA extends Color {
 
     public function calculateAngle(Color $color): float
     {
-        return $this->asHSV()->calculateAngle($color);
+        return $this->asRYB()->calculateAngle($color);
     }
 
     public function digitalDistance(Color $color): float
@@ -67,17 +67,17 @@ class HSLA extends Color {
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asHSV()->findColorByAngle($angle)->asHSLA();
+        return $this->asRYB()->findColorByAngle($angle)->asHSLA();
     }
 
-    public function findColorAtDifference(float $difference, int $direction = 1): self
+    public function findColorAtDifference(float $difference): self
     {
-        return $this->asLAB()->findColorAtDifference($difference, $direction)->asHSLA();
+        return $this->asLAB()->findColorAtDifference($difference)->asHSLA();
     }
 
-    public function findColorAtDistance(float $distance, int $direction = 1): self
+    public function findColorAtDistance(float $distance): self
     {
-        return $this->asLAB()->findColorAtDistance($distance, $direction)->asHSLA();
+        return $this->asLAB()->findColorAtDistance($distance)->asHSLA();
     }
 
     public function findColorByShade(int $shade): self
@@ -190,5 +190,10 @@ class HSLA extends Color {
     public function asHSV(): HSV
     {
         return $this->asHSL()->asHSV();
+    }
+
+    public function asRYB(): RYB
+    {
+        return $this->asRGB()->asRYB();
     }
 }
