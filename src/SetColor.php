@@ -17,7 +17,7 @@ class SetColor {
         'hsl'   => HSL::class,
     ];
 
-    private static string $namedColorsLookupTable = "NamedColorsLookupTable.php";
+    private static string $namedColors = "NamedColorsLookupTable.php";
 
     public static function fromString(string $colorString)
     {
@@ -37,10 +37,10 @@ class SetColor {
             return new HEX($hexColor);
         }
 
-        $namedColorsLookupTable = require self::$namedColorsLookupTable;
+        $namedColors = require self::$namedColors;
 
-        if (isset($namedColorsLookupTable[$colorString])) {
-            $colorValue = explode(',', $namedColorsLookupTable[$colorString]['rgb'] ?? $namedColorsLookupTable[$colorString]['rgba']);
+        if (isset($namedColors[$colorString])) {
+            $colorValue = explode(',', $namedColors[$colorString]['rgb'] ?? $namedColors[$colorString]['rgba']);
 
             $colorClass = count($colorValue) === 3 ? RGB::class : RGBA::class;
             
