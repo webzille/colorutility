@@ -118,7 +118,7 @@ class RYB extends Color {
             $weight = ((int) $testAngle % (360 / count($this->colorWheel))) / (360 / count($this->colorWheel));
             $newColor = $this->blendColors($color1, $color2, $weight);
             $currentDistance = $this->visibleDifference($this->normalizeColor($newColor));
-            //echo $currentDistance . PHP_EOL;
+            
             if ($currentDistance < $bestDistance) {
                 $bestDistance = $currentDistance;
                 $bestAngle = $testAngle;
