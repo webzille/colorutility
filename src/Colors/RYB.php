@@ -13,19 +13,19 @@ class RYB extends Color {
     private string $b;
 
     protected array $colorWheel = [
-     // [r, y, b, angle]
-        [255, 0, 0, 0],                 // 0 Red
-        [167, 25, 75, 30],              // 30 Red-Purple
-        [135, 0, 175, 60],              // 60 Purple
-        [61, 0, 165, 90],               // 90 Purple-Blue
-        [0, 0, 255, 120],               // 120 Blue
-        [3, 87, 206, 150],              // 150 Blue-Green
-        [0, 255, 255, 180],             // 180 Green
-        [43, 234, 69, 210],             // 210 Green-Yellow
-        [0, 255, 0, 240],               // 240 Yellow
-        [79, 250, 0, 270],              // 270 Yellow-Orange
-        [167, 250, 0, 300],             // 300 Orange
-        [250, 167, 0, 330],             // 330 Orange-Red
+     // [r,   y,   b, angle]
+        [255, 0,   0,   0  ],   // 0 Red
+        [167, 25,  75,  30 ],   // 30 Red-Purple
+        [135, 0,   175, 60 ],   // 60 Purple
+        [61,  0,   165, 90 ],   // 90 Purple-Blue
+        [0,   0,   255, 120],   // 120 Blue
+        [3,   87,  206, 150],   // 150 Blue-Green
+        [0,   255, 255, 180],   // 180 Green
+        [43,  234, 69,  210],   // 210 Green-Yellow
+        [0,   255, 0,   240],   // 240 Yellow
+        [79,  250, 0,   270],   // 270 Yellow-Orange
+        [167, 250, 0,   300],   // 300 Orange
+        [250, 167, 0,   330],   // 330 Orange-Red
     ];
 
     function __construct($r, $y, $b)
@@ -118,7 +118,7 @@ class RYB extends Color {
             $weight = ((int) $testAngle % (360 / count($this->colorWheel))) / (360 / count($this->colorWheel));
             $newColor = $this->blendColors($color1, $color2, $weight);
             $currentDistance = $this->visibleDifference($this->normalizeColor($newColor));
-            echo $currentDistance . PHP_EOL;
+            //echo $currentDistance . PHP_EOL;
             if ($currentDistance < $bestDistance) {
                 $bestDistance = $currentDistance;
                 $bestAngle = $testAngle;
@@ -138,7 +138,7 @@ class RYB extends Color {
         }
         
         $segmentIndex = floor($angle / (360 / count($this->colorWheel)));
-        $weight = ((int) $angle % (360 / count($this->colorWheel))) / (360 / count($this->colorWheel));
+        $weight = fmod($angle, 360 / count($this->colorWheel)) / (360 / count($this->colorWheel));
 
         if ($angle === 0 || $angle === 360) {
             $segmentIndex = count($this->colorWheel) - 1;
@@ -154,21 +154,15 @@ class RYB extends Color {
 
     public function normalizeColor(Color $color): RYB
     {
-        if ($this->visibleDifference($color) < 10) {
-            return $color;
-        }
-        
-        $color = $color->asRYB();
+        $colorHSL = $color->asHSL();
+        $currentHSL = $this->asHSL();
 
-        $max = max($this->r, $this->y, $this->b);
+        $deltaS = abs($colorHSL->getSaturation() - $currentHSL->getSaturation());
+        $saturation = $colorHSL->getSaturation() - $deltaS;
 
-        $percent = (255 - $max) / 255;
+        $newHSL = new HSL($colorHSL->getHue(), $saturation, $currentHSL->getLightness());
 
-        $newR = $percent !== 0 ? $color->getRed() * $percent : $color->getRed();
-        $newY = $percent !== 0 ? $color->getYellow() * $percent : $color->getYellow();
-        $newB = $percent !== 0 ? $color->getBlue() * $percent : $color->getBlue();
-
-        return new RYB($newR, $newY, $newB);
+        return $newHSL->asRYB();
     }
 
     public function blendColors(RYB $color1, RYB $color2, float $weight): RYB
