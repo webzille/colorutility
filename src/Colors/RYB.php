@@ -131,7 +131,7 @@ class RYB extends Color {
 
     public function findColorByAngle(float $angle): RYB
     {
-        $angle = $this->currentAngle(new RYB(255, 0, 0)) + $angle;
+        $angle = $this->currentAngle() + $angle;
 
         while ($angle >= 360) {
             $angle -= 360;
