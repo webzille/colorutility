@@ -87,8 +87,8 @@ class RYB extends Color {
         $bestAngle = 0;
 
         foreach ($this->colorWheel as $colorData) {
-            $colorObject = new RYB(...$colorData);
-            $distance = $this->digitalDistance($this->normalizeColor($colorObject));
+            $colorObject = $this->normalizeColor(new RYB(...$colorData));
+            $distance = $this->digitalDistance($colorObject);
 
             if ($distance < $bestDistance) {
                 $bestDistance = $distance;
@@ -118,7 +118,7 @@ class RYB extends Color {
             $weight = ((int) $testAngle % (360 / count($this->colorWheel))) / (360 / count($this->colorWheel));
             $newColor = $this->blendColors($color1, $color2, $weight);
             $currentDistance = $this->digitalDistance($this->normalizeColor($newColor));
-            
+            echo $currentDistance . PHP_EOL;
             if ($currentDistance < $bestDistance) {
                 $bestDistance = $currentDistance;
                 $bestAngle = $testAngle;
@@ -154,13 +154,17 @@ class RYB extends Color {
 
     public function normalizeColor(Color $color): RYB
     {
-        $thisAsHSL = $this->asHSL();
+        $color = $color->asRYB();
 
-        $currentSaturation = $thisAsHSL->getSaturation();
+        $max = max($this->r, $this->y, $this->b);
 
-        $newColor = new HSL($color->asHSL()->getHue(), $currentSaturation, $thisAsHSL->getLightness());
+        $percent = (255 - $max) / 255;
 
-        return $newColor->asRYB();
+        $newR = $percent !== 0 ? $color->getRed() * $percent : $color->getRed();
+        $newY = $percent !== 0 ? $color->getYellow() * $percent : $color->getYellow();
+        $newB = $percent !== 0 ? $color->getBlue() * $percent : $color->getBlue();
+
+        return new RYB($newR, $newY, $newB);
     }
 
     public function blendColors(RYB $color1, RYB $color2, float $weight): RYB
