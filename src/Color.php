@@ -10,16 +10,9 @@ use Webzille\ColorUtility\Colors\LAB;
 use Webzille\ColorUtility\Colors\RGB;
 use Webzille\ColorUtility\Colors\RGBA;
 use Webzille\ColorUtility\Colors\HSV;
+use Webzille\ColorUtility\Colors\RYB;
 
 abstract class Color {
-
-    protected array $websafe = [
-                                RGBA::class,
-                                RGB::class,
-                                HSLA::class,
-                                HSL::class,
-                                HEX::class,
-                            ];
 
     function __toString(): string
     {
@@ -76,9 +69,14 @@ abstract class Color {
         return $this;
     }
 
+    public function asRYB(): RYB
+    {
+        return $this;
+    }
+
     public function viewColor(string $label = null): string
     {
-        $isWebSafe = in_array(get_class($this), $this->websafe);
+        $isWebSafe = in_array(get_class($this), Colors::$websafe);
 
         $webSafeColor = $isWebSafe ? $this : $this->asRGB();
 
