@@ -29,7 +29,12 @@ class RGBA extends Color {
 
     public function asString(): string
     {
-        return "rgba({$this->r}, {$this->g}, {$this->b}, {$this->alpha})";
+        $r = abs(round($this->r));
+        $g = abs(round($this->g));
+        $b = abs(round($this->b));
+        $a = $this->alpha;
+
+        return "rgba($r, $g, $b, $a)";
     }
 
     public function isLight(): bool
