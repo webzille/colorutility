@@ -129,14 +129,14 @@ class HSL extends Color
 
     public function asRGB(): RGB
     {
+        list($h, $s, $l) = $this->asArray();
+
         $h = $this->h / 360;
         $s = $this->s / 100;
         $l = $this->l / 100;
 
         if ($s === 0) {
-            $r = $l;
-            $g = $l;
-            $b = $l;
+            $r = $g = $b = $l;
         } else {
             $q = ($l < 0.5) ? $l * (1 + $s) : $l + $s - $l * $s;
             $p = 2 * $l - $q;
@@ -146,11 +146,7 @@ class HSL extends Color
             $b = $this->hueToRGB($p, $q, $h - 1/3);
         }
 
-        $r = round($r * 255);
-        $g = round($g * 255);
-        $b = round($b * 255);
-
-        return new RGB($r, $g, $b);
+        return new RGB($r * 255, $g * 255, $b * 255);
     }
 
     private function hueToRGB($p, $q, $t)
