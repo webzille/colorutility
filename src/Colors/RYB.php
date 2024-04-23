@@ -87,8 +87,8 @@ class RYB extends Color {
         $bestAngle = 0;
 
         foreach ($this->colorWheel as $colorData) {
-            $colorObject = $this->normalizeColor(new RYB(...$colorData));
-            $distance = $this->digitalDistance($colorObject);
+            $colorObject = new RYB(...$colorData);
+            $distance = $this->visibleDifference($this->normalizeColor($colorObject));
 
             if ($distance < $bestDistance) {
                 $bestDistance = $distance;
@@ -107,7 +107,7 @@ class RYB extends Color {
         $color2 = new RYB(...$this->colorWheel[($segmentIndex + 1) % count($this->colorWheel)]);
         $currentDistance = PHP_INT_MAX;
         
-        $tolerance = 5;
+        $tolerance = 10;
         $step = $i = 0.15;
         while ($bestDistance > $tolerance && $i < 360) {
             $testAngle = ($bestAngle + $i);
@@ -117,7 +117,7 @@ class RYB extends Color {
 
             $weight = ((int) $testAngle % (360 / count($this->colorWheel))) / (360 / count($this->colorWheel));
             $newColor = $this->blendColors($color1, $color2, $weight);
-            $currentDistance = $this->digitalDistance($this->normalizeColor($newColor));
+            $currentDistance = $this->visibleDifference($this->normalizeColor($newColor));
             echo $currentDistance . PHP_EOL;
             if ($currentDistance < $bestDistance) {
                 $bestDistance = $currentDistance;
@@ -154,6 +154,10 @@ class RYB extends Color {
 
     public function normalizeColor(Color $color): RYB
     {
+        if ($this->visibleDifference($color) < 10) {
+            return $color;
+        }
+        
         $color = $color->asRYB();
 
         $max = max($this->r, $this->y, $this->b);
