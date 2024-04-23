@@ -27,14 +27,18 @@ class RGB extends Color
 
     public function asString(): string
     {
-        return "rgb({$this->r}, {$this->g}, {$this->b})";
+        $r = abs(round($this->r));
+        $g = abs(round($this->g));
+        $b = abs(round($this->b));
+
+        return "rgb($r, $g, $b)";
     }
 
     public function isLight(): bool
     {
         $brightness = ($this->r * 0.2126) + ($this->g * 0.7152) + ($this->b * 0.0722);
 
-        return ceil($brightness) > 110;
+        return $brightness > 128;
     }
 
     public function white(): self
@@ -199,37 +203,40 @@ class RGB extends Color
 
     public function asHSL(): HSL
     {
-        $r = $this->r / 255.0;
-        $g = $this->g / 255.0;
-        $b = $this->b / 255.0;
+        list($r,$g, $b) = $this->asArray();
+
+        $r /= 255;
+        $g /= 255;
+        $b /= 255;
 
         $max = max($r, $g, $b);
         $min = min($r, $g, $b);
 
-        $l = ($max + $min) / 2.0;
+        $h = 0;
+        $s = 0;
+        $l = ($max + $min) / 2;
 
-        if (abs($max - $min) < 0.00001) {
-            return new HSL(0, 0, round($l * 100));
+        if ($max != $min) {
+            $d = $max - $min;
+            $s = $l > 0.5 ? $d / (2 - $max - $min) : $d / ($max + $min);
+
+            switch ($max) {
+                case $r:
+                    $h = ($g - $b) / $d + ($g < $b ? 6 : 0);
+                    break;
+                case $g:
+                    $h = ($b - $r) / $d + 2;
+                    break;
+                case $b:
+                    $h = ($r - $g) / $d + 4;
+                    break;
+            }
+
+            $h *= 60;
         }
 
-        if ($l < 0.5) {
-            $s = ($max - $min) / ($max + $min);
-        } else {
-            $s = ($max - $min) / (2.0 - $max - $min);
-        }
-
-        if ($max === $r) {
-            $h = 60.0 * (($g - $b) / ($max - $min));
-        } elseif ($max === $g) {
-            $h = 60.0 * (($b - $r) / ($max - $min) + 2.0);
-        } elseif ($max === $b) {
-            $h = 60.0 * (($r - $g) / ($max - $min) + 4.0);
-        }
-
-        $h = round($h < 0 ? $h + 360 : ($h >= 360 ? $h - 360 : $h));
-
-        $s = round($s * 100);
-        $l = round($l * 100);
+        $s *= 100;
+        $l *= 100;
 
         return new HSL($h, $s, $l);
     }
