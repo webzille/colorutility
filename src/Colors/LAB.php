@@ -234,9 +234,9 @@ class LAB extends Color
         $b = ($b > 0.0031308) ? ((1.055 * ($b ** (1 / 2.4))) - 0.055) : ($b * 12.92);
 
         return new RGB(
-            round(max(0, min(255, $r * 255)) * 100) / 100,
-            round(max(0, min(255, $g * 255)) * 100) / 100,
-            round(max(0, min(255, $b * 255)) * 100) / 100
+            (max(0, min(255, $r * 255)) * 100) / 100,
+            (max(0, min(255, $g * 255)) * 100) / 100,
+            (max(0, min(255, $b * 255)) * 100) / 100
         );
     }
 
@@ -264,25 +264,6 @@ class LAB extends Color
     public function asRGBA(float $alpha = 1): RGBA
     {
         return $this->asRGB()->asRGBA($alpha);
-    }
-
-    public function xyzToLAB($xyz): self
-    {
-        list($x, $y, $z) = $xyz;
-
-        $x /= 95.047;
-        $y /= 100.000;
-        $z /= 108.883;
-
-        $x = $x > 0.008856 ? pow($x, 1 / 3) : (7.787 * $x + 16 / 116);
-        $y = $y > 0.008856 ? pow($y, 1 / 3) : (7.787 * $y + 16 / 116);
-        $z = $z > 0.008856 ? pow($z, 1 / 3) : (7.787 * $z + 16 / 116);
-
-        $L = max(0, 116 * $y - 16);
-        $a = 500 * ($x - $y);
-        $b = 200 * ($y - $z);
-
-        return new LAB($L, $a, $b);
     }
 
     public function asHEX(): HEX
