@@ -15,7 +15,7 @@ class RYB extends Color {
     protected array $colorWheel = [
      // [r,   y,   b, angle]
         [255, 0,   0,   0  ],   // 0   Red
-        [167, 25,  75,  30 ],   // 30  Red-Purple
+        [107, 25,  75,  30 ],   // 30  Red-Purple
         [135, 0,   175, 60 ],   // 60  Purple
         [61,  0,   165, 90 ],   // 90  Purple-Blue
         [0,   0,   255, 120],   // 120 Blue
@@ -67,7 +67,7 @@ class RYB extends Color {
         $angle1 = $this->currentAngle();
         $angle2 = $color->asRYB()->currentAngle();
 
-        return abs(($angle1 - $angle2) % 360);
+        return fmod(abs($angle1 - $angle2), 360);
     }
 
     public function digitalDistance(Color $color): float
@@ -102,13 +102,13 @@ class RYB extends Color {
             $segmentIndex = count($this->colorWheel) - 1;
             $weight = 0;
         }
-
+        
         $color1 = new RYB(...$this->colorWheel[$segmentIndex]);
         $color2 = new RYB(...$this->colorWheel[($segmentIndex + 1) % count($this->colorWheel)]);
         $currentDistance = PHP_INT_MAX;
-
-        $tolerance = 10;
-        $step = $i = 0.15;
+        
+        $tolerance = 1;
+        $step = $i = 0.05;
         while ($bestDistance > $tolerance && $i < 360) {
             $testAngle = ($bestAngle + $i);
             if ($testAngle > 360) {
@@ -118,7 +118,7 @@ class RYB extends Color {
             $weight = ((int) $testAngle % (360 / count($this->colorWheel))) / (360 / count($this->colorWheel));
             $newColor = $this->blendColors($color1, $color2, $weight);
             $currentDistance = $this->visibleDifference($this->normalizeColor($newColor));
-
+            
             if ($currentDistance < $bestDistance) {
                 $bestDistance = $currentDistance;
                 $bestAngle = $testAngle;
@@ -131,12 +131,16 @@ class RYB extends Color {
 
     public function findColorByAngle(float $angle): RYB
     {
+        if ($this->isGrayscale()) {
+            return clone $this;
+        }
+
         $angle = $this->currentAngle() + $angle;
 
         while ($angle >= 360) {
             $angle -= 360;
         }
-        
+
         $segmentIndex = floor($angle / (360 / count($this->colorWheel)));
         $weight = fmod($angle, 360 / count($this->colorWheel)) / (360 / count($this->colorWheel));
 
@@ -158,7 +162,7 @@ class RYB extends Color {
         $currentHSL = $this->asHSL();
 
         $deltaS = abs($colorHSL->getSaturation() - $currentHSL->getSaturation());
-        $saturation = $colorHSL->getSaturation() - $deltaS;
+        $saturation = $colorHSL->getSaturation() - ($deltaS / 2);
 
         $newHSL = new HSL($colorHSL->getHue(), $saturation, $currentHSL->getLightness());
 
@@ -172,6 +176,11 @@ class RYB extends Color {
         $blue = $color1->getBlue() * (1 - $weight) + $color2->getBlue() * $weight;
 
         return new RYB($red, $yellow, $blue);
+    }
+
+    public function isGrayscale(): bool
+    {
+        return abs($this->r - $this->y) === 0 && abs($this->y - $this->b) === 0 && abs($this->b - $this->r) === 0;
     }
 
     public function findColorAtDifference(float $difference): self
