@@ -83,16 +83,20 @@ class RYB extends Color {
     public function currentAngle(): float
     {
         $bestDistance = PHP_FLOAT_MAX;
-        $newColor = new RYB(255, 0, 0);
         $bestAngle = 0;
 
         foreach ($this->colorWheel as $colorData) {
             $colorObject = new RYB(...$colorData);
-            $distance = $this->visibleDifference($this->normalizeColor($colorObject));
+            $distance = $this->digitalDistance($this->normalizeColor($colorObject));
 
             if ($distance < $bestDistance) {
                 $bestDistance = $distance;
+                $bestColor = $colorObject;
                 $bestAngle = $colorData[3];
+                
+                if ($this->asString() === $colorObject->asString()) {
+                    return $bestAngle;
+                }
             }
         }
 
@@ -105,24 +109,25 @@ class RYB extends Color {
         
         $color1 = new RYB(...$this->colorWheel[$segmentIndex]);
         $color2 = new RYB(...$this->colorWheel[($segmentIndex + 1) % count($this->colorWheel)]);
-        $currentDistance = PHP_INT_MAX;
         
-        $tolerance = 1;
-        $step = $i = 0.05;
-        while ($bestDistance > $tolerance && $i < 360) {
-            $testAngle = ($bestAngle + $i);
-            if ($testAngle > 360) {
-                $testAngle -= 360;
-            }
+        if ($this->digitalDistance($bestColor) < 1) {
+            return $bestAngle;
+        }
+
+        $step = $i = 0.01;
+        while ($i < 360) {
+            $testAngle = fmod(($bestAngle + $i), 360);
 
             $weight = ((int) $testAngle % (360 / count($this->colorWheel))) / (360 / count($this->colorWheel));
-            $newColor = $this->blendColors($color1, $color2, $weight);
-            $currentDistance = $this->visibleDifference($this->normalizeColor($newColor));
+            $newColor = $color1->blendColors($color2, $weight);
+            $currentDistance = $this->digitalDistance($this->normalizeColor($newColor));
             
-            if ($currentDistance < $bestDistance) {
-                $bestDistance = $currentDistance;
-                $bestAngle = $testAngle;
+            if ($currentDistance > $bestDistance) {
+                break;
             }
+            
+            $bestDistance = $currentDistance;
+            $bestAngle = $testAngle;
             $i += $step;
         }
 
@@ -140,7 +145,7 @@ class RYB extends Color {
         while ($angle >= 360) {
             $angle -= 360;
         }
-
+        echo $angle;
         $segmentIndex = floor($angle / (360 / count($this->colorWheel)));
         $weight = fmod($angle, 360 / count($this->colorWheel)) / (360 / count($this->colorWheel));
 
@@ -151,29 +156,40 @@ class RYB extends Color {
         
         $color1 = new RYB(...$this->colorWheel[$segmentIndex]);
         $color2 = new RYB(...$this->colorWheel[($segmentIndex + 1) % count($this->colorWheel)]);
-        
-        $newColor = $this->blendColors($color1, $color2, $weight);
+
+        $newColor = $color1->blendColors($color2, $weight);
         return $this->normalizeColor($newColor);
     }
 
-    public function normalizeColor(Color $color): RYB
+    public function normalizeColor(RYB $color): RYB
     {
-        $colorHSL = $color->asHSL();
-        $currentHSL = $this->asHSL();
+        list($targetR, $targetY, $targetB) = $color->asArray();
 
-        $deltaS = abs($colorHSL->getSaturation() - $currentHSL->getSaturation());
-        $saturation = $colorHSL->getSaturation() - ($deltaS / 2);
+        $maxCurrent = max($this->r, $this->y, $this->b);
+        $minCurrent = min($this->r, $this->y, $this->b);
+        $rangeCurrent = $maxCurrent - $minCurrent;
 
-        $newHSL = new HSL($colorHSL->getHue(), $saturation, $currentHSL->getLightness());
+        $maxTarget = max($targetR, $targetY, $targetB);
+        $minTarget = min($targetR, $targetY, $targetB);
+        $rangeTarget = $maxTarget - $minTarget;
 
-        return $newHSL->asRYB();
+        $dampingFactor = 1;
+        $adjustmentRatio = 1 + ($dampingFactor * ($rangeCurrent - $rangeTarget) / 255);
+
+        $newR = $minCurrent + ($targetR - $minTarget) * $adjustmentRatio;
+        $newY = $minCurrent + ($targetY - $minTarget) * $adjustmentRatio;
+        $newB = $minCurrent + ($targetB - $minTarget) * $adjustmentRatio;
+
+        return new RYB($newR, $newY, $newB);
     }
 
-    public function blendColors(RYB $color1, RYB $color2, float $weight): RYB
+    public function blendColors(RYB $color, float $weight): RYB
     {
-        $red = $color1->getRed() * (1 - $weight) + $color2->getRed() * $weight;
-        $yellow = $color1->getYellow() * (1 - $weight) + $color2->getYellow() * $weight;
-        $blue = $color1->getBlue() * (1 - $weight) + $color2->getBlue() * $weight;
+        $weight = (1 - cos($weight * M_PI)) / 2;
+        
+        $red = $this->r * (1 - $weight) + $color->getRed() * $weight;
+        $yellow = $this->y * (1 - $weight) + $color->getYellow() * $weight;
+        $blue = $this->b * (1 - $weight) + $color->getBlue() * $weight;
 
         return new RYB($red, $yellow, $blue);
     }
