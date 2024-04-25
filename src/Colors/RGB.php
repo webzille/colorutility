@@ -27,9 +27,9 @@ class RGB extends Color
 
     public function asString(): string
     {
-        $r = abs(round($this->r));
-        $g = abs(round($this->g));
-        $b = abs(round($this->b));
+        $r = min(255, max(0, abs(round($this->r))));
+        $g = min(255, max(0, abs(round($this->g))));
+        $b = min(255, max(0, abs(round($this->b))));
 
         return "rgb($r, $g, $b)";
     }
