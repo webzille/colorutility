@@ -14,18 +14,18 @@ class RYB extends Color {
 
     protected array $colorWheel = [
     //  [r,   y,   b, angle]
-        [255, 0,   0,   0],     // 0   Red
-        [200, 123, 0,   30],    // 30  Red-Orange
-        [139, 255, 0,   60],    // 60  Orange
-        [47,  255, 0,   90],    // 90  Yellow-Orange
-        [0,   255, 0,   120],   // 120 Yellow
-        [47,  255, 129, 150],   // 150 Yellow-Green
-        [0,   128, 128, 180],   // 180 Green
-        [0,   69,  139, 210],   // 210 Blue-Green
-        [0,   0,   255, 240],   // 240 Blue
-        [138, 43,  226, 270],   // 270 Blue-Violet
-        [148, 0,   211, 300],   // 300 Violet
-        [199, 21,  133, 330],   // 330 Red-Violet
+        [255, 0,   0,   0  ],   // 0   Red
+        [107, 25,  75,  30 ],   // 30  Red-Purple
+        [135, 0,   175, 60 ],   // 60  Purple
+        [61,  0,   165, 90 ],   // 90  Purple-Blue
+        [0,   0,   255, 120],   // 120 Blue
+        [3,   87,  206, 150],   // 150 Blue-Green
+        [0,   255, 255, 180],   // 180 Green
+        [43,  234, 69,  210],   // 210 Green-Yellow
+        [0,   255, 0,   240],   // 240 Yellow
+        [79,  250, 0,   270],   // 270 Yellow-Orange
+        [167, 250, 0,   300],   // 300 Orange
+        [250, 167, 0,   330],   // 330 Orange-Red
     ];
 
     function __construct($r, $y, $b)
