@@ -145,7 +145,7 @@ class RYB extends Color {
         while ($angle >= 360) {
             $angle -= 360;
         }
-        echo $angle;
+
         $segmentIndex = floor($angle / (360 / count($this->colorWheel)));
         $weight = fmod($angle, 360 / count($this->colorWheel)) / (360 / count($this->colorWheel));
 
