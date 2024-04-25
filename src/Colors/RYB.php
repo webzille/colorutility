@@ -13,19 +13,19 @@ class RYB extends Color {
     private string $b;
 
     protected array $colorWheel = [
-     // [r,   y,   b, angle]
-        [255, 0,   0,   0  ],   // 0   Red
-        [107, 25,  75,  30 ],   // 30  Red-Purple
-        [135, 0,   175, 60 ],   // 60  Purple
-        [61,  0,   165, 90 ],   // 90  Purple-Blue
-        [0,   0,   255, 120],   // 120 Blue
-        [3,   87,  206, 150],   // 150 Blue-Green
-        [0,   255, 255, 180],   // 180 Green
-        [43,  234, 69,  210],   // 210 Green-Yellow
-        [0,   255, 0,   240],   // 240 Yellow
-        [79,  250, 0,   270],   // 270 Yellow-Orange
-        [167, 250, 0,   300],   // 300 Orange
-        [250, 167, 0,   330],   // 330 Orange-Red
+    //  [r,   y,   b, angle]
+        [255, 0,   0,   0],     // 0   Red
+        [200, 123, 0,   30],    // 30  Red-Orange
+        [139, 255, 0,   60],    // 60  Orange
+        [47,  255, 0,   90],    // 90  Yellow-Orange
+        [0,   255, 0,   120],   // 120 Yellow
+        [47,  255, 129, 150],   // 150 Yellow-Green
+        [0,   128, 128, 180],   // 180 Green
+        [0,   69,  139, 210],   // 210 Blue-Green
+        [0,   0,   255, 240],   // 240 Blue
+        [138, 43,  226, 270],   // 270 Blue-Violet
+        [148, 0,   211, 300],   // 300 Violet
+        [199, 21,  133, 330],   // 330 Red-Violet
     ];
 
     function __construct($r, $y, $b)
@@ -99,6 +99,10 @@ class RYB extends Color {
                 }
             }
         }
+        
+        if ($this->digitalDistance($bestColor) < 1) {
+            return $bestAngle;
+        }
 
         $segmentIndex = floor($bestAngle / (360 / count($this->colorWheel)));
 
@@ -109,10 +113,6 @@ class RYB extends Color {
         
         $color1 = new RYB(...$this->colorWheel[$segmentIndex]);
         $color2 = new RYB(...$this->colorWheel[($segmentIndex + 1) % count($this->colorWheel)]);
-        
-        if ($this->digitalDistance($bestColor) < 1) {
-            return $bestAngle;
-        }
 
         $step = $i = 0.01;
         while ($i < 360) {
@@ -145,7 +145,7 @@ class RYB extends Color {
         while ($angle >= 360) {
             $angle -= 360;
         }
-
+        
         $segmentIndex = floor($angle / (360 / count($this->colorWheel)));
         $weight = fmod($angle, 360 / count($this->colorWheel)) / (360 / count($this->colorWheel));
 
@@ -161,7 +161,7 @@ class RYB extends Color {
         return $this->normalizeColor($newColor);
     }
 
-    public function normalizeColor(RYB $color): RYB
+    public function normalizeColor(RYB $color, int $dampingFactor = 1): RYB
     {
         list($targetR, $targetY, $targetB) = $color->asArray();
 
@@ -173,7 +173,6 @@ class RYB extends Color {
         $minTarget = min($targetR, $targetY, $targetB);
         $rangeTarget = $maxTarget - $minTarget;
 
-        $dampingFactor = 1;
         $adjustmentRatio = 1 + ($dampingFactor * ($rangeCurrent - $rangeTarget) / 255);
 
         $newR = $minCurrent + ($targetR - $minTarget) * $adjustmentRatio;
@@ -241,40 +240,40 @@ class RYB extends Color {
 
     public function asRGB(): RGB
     {
-        list($r, $y, $b) = $this->asArray();
+        list($red, $yellow, $blue) = $this->asArray();
 
-        $w = min($r, $y, $b);
-        $r -= $w;
-        $y -= $w;
-        $b -= $w;
+        $minPrimary = min($red, $yellow, $blue);
+        $red -= $minPrimary;
+        $yellow -= $minPrimary;
+        $blue -= $minPrimary;
 
-        $my = max($r, $y, $b);
+        $maxPrimary = max($red, $yellow, $blue);
 
-        $g = min($y, $b);
-        $y -= $g;
-        $b -= $g;
+        $greenComponent = min($yellow, $blue);
+        $yellow -= $greenComponent;
+        $blue -= $greenComponent;
 
-        if ($b && $g) {
-            $b *= 2.0;
-            $g *= 2.0;
+        if ($blue && $greenComponent) {
+            $blue *= 2.0;
+            $greenComponent *= 2.0;
         }
 
-        $r += $y;
-        $g += $y;
+        $red += $yellow;
+        $green = $greenComponent + $yellow;
 
-        $mg = max($r, $g, $b);
-        if ($mg) {
-            $n = $my / $mg;
-            $r *= $n;
-            $g *= $n;
-            $b *= $n;
+        $maxGreen = max($red, $green, $blue);
+        if ($maxGreen) {
+            $normalizationFactor = $maxPrimary / $maxGreen;
+            $red *= $normalizationFactor;
+            $green *= $normalizationFactor;
+            $blue *= $normalizationFactor;
         }
 
-        $r += $w;
-        $g += $w;
-        $b += $w;
+        $red += $minPrimary;
+        $green += $minPrimary;
+        $blue += $minPrimary;
 
-        return new RGB($r, $g, $b);
+        return new RGB($red, $green, $blue);
     }
 
     public function asRGBA(float $alpha = 1): RGBA
