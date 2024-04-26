@@ -40,7 +40,7 @@ echo $object->viewColor("Current Color:");
 echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
 echo PHP_EOL;
 
-$object = new rgb(0, 128, 0);
+$object = new rgb(0, 255, 0);
 echo $object->viewColor("Current Color:");
 echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
 echo PHP_EOL;
@@ -86,7 +86,7 @@ $Blue = new RYB(0, 0, 255);
 echo $Blue->viewColor('Blue');
 $BlueGreen = new RYB(0, 69, 139);
 echo $BlueGreen->viewColor('Blue-Green');
-$Green = new RYB(0, 128, 128);
+$Green = new RYB(0, 255, 255);
 echo $Green->viewColor('Green');
 $YellowGreen = new RYB(47, 255, 129);
 echo $YellowGreen->viewColor('Yellow-Green');
