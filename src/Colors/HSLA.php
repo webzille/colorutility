@@ -67,32 +67,32 @@ class HSLA extends Color {
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asRYB()->findColorByAngle($angle)->asHSLA();
+        return $this->asRYB()->findColorByAngle($angle)->asHSLA($this->alpha);
     }
 
     public function findColorAtDifference(float $difference): self
     {
-        return $this->asLAB()->findColorAtDifference($difference)->asHSLA();
+        return $this->asLAB()->findColorAtDifference($difference)->asHSLA($this->alpha);
     }
 
     public function findColorAtDistance(float $distance): self
     {
-        return $this->asLAB()->findColorAtDistance($distance)->asHSLA();
+        return $this->asLAB()->findColorAtDistance($distance)->asHSLA($this->alpha);
     }
 
     public function findColorByShade(int $shade): self
     {
-        return $this->asLAB()->findColorByShade($shade)->asHSLA();
+        return $this->asLAB()->findColorByShade($shade)->asHSLA($this->alpha);
     }
 
     public function linearDeviance(float $percent): self
     {
-        return $this->asLAB()->linearDeviance($percent)->asHSLA();
+        return $this->asLAB()->linearDeviance($percent)->asHSLA($this->alpha);
     }
 
     public function angularDeviance(float $percent): self
     {
-        return $this->asLAB()->angularDeviance($percent)->asHSLA();
+        return $this->asLAB()->angularDeviance($percent)->asHSLA($this->alpha);
     }
 
     public function getHue(): float
