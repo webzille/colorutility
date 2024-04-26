@@ -138,8 +138,12 @@ class RYB extends Color {
 
         $angle = $this->currentAngle() + $angle;
 
-        while ($angle >= 360) {
+        if ($angle >= 360) {
             $angle -= 360;
+        }
+
+        if ($angle < 0) {
+            $angle += 360;
         }
 
         $segmentIndex = floor($angle / (360 / count($this->colorWheel)));
