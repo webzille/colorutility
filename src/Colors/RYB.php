@@ -19,7 +19,7 @@ class RYB extends Color {
         [148, 0,   211, 60 ],   // 60  Violet
         [138, 43,  226, 90 ],   // 90  Blue-Violet
         [0,   0,   255, 120],   // 120 Blue
-        [0,   69,  139, 150],   // 150 Blue-Green
+        [0,   128, 255, 150],   // 150 Blue-Green
         [0,   255, 255, 180],   // 180 Green
         [47,  255, 129, 210],   // 210 Yellow-Green
         [0,   255, 0,   240],   // 240 Yellow
@@ -74,9 +74,9 @@ class RYB extends Color {
     {
         list($r, $y, $b) = $color->asRYB()->asArray();
 
-        $deltaR = abs($this->r - $r);
-        $deltaY = abs($this->y - $y);
-        $deltaB = abs($this->b - $b);
+        $deltaR = $this->r - $r;
+        $deltaY = $this->y - $y;
+        $deltaB = $this->b - $b;
 
         return sqrt($deltaR ** 2 + $deltaY ** 2 + $deltaB ** 2);
     }
