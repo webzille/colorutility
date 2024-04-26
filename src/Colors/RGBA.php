@@ -66,12 +66,12 @@ class RGBA extends Color {
 
     public function digitalDistance(Color $color): float
     {
-        return $this->asRGB()->digitalDistance($color);
+        return $this->asLAB()->digitalDistance($color);
     }
 
     public function findColorAtDistance(float $distance): RGBA
     {
-        return $this->asRGB()->findColorAtDistance($distance)->asRGBA();
+        return $this->asLAB()->findColorAtDistance($distance)->asRGBA($this->alpha);
     }
 
     public function visibleDifference(Color $color): float
