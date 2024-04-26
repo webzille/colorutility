@@ -91,44 +91,40 @@ class RYB extends Color {
 
             if ($distance < $bestDistance) {
                 $bestDistance = $distance;
-                $bestColor = $colorObject;
                 $bestAngle = $colorData[3];
-                
+
                 if ($this->asString() === $colorObject->asString()) {
                     return $bestAngle;
                 }
             }
         }
-        
-        if ($this->digitalDistance($bestColor) < 1) {
-            return $bestAngle;
-        }
 
         $segmentIndex = floor($bestAngle / (360 / count($this->colorWheel)));
+        $nextSegmentIndex = ($segmentIndex + 1) % count($this->colorWheel);
 
-        if ($bestAngle === 0 || $bestAngle === 360) {
-            $segmentIndex = count($this->colorWheel) - 1;
-            $weight = 0;
-        }
-        
         $color1 = new RYB(...$this->colorWheel[$segmentIndex]);
-        $color2 = new RYB(...$this->colorWheel[($segmentIndex + 1) % count($this->colorWheel)]);
+        $color2 = new RYB(...$this->colorWheel[$nextSegmentIndex]);
 
-        $step = $i = 0.01;
-        while ($i < 360) {
-            $testAngle = fmod(($bestAngle + $i), 360);
+        $low = $this->colorWheel[$segmentIndex][3];
+        $high = $this->colorWheel[$nextSegmentIndex][3];
+        if ($high < $low) {
+            $high += 360;
+        }
 
-            $weight = ((int) $testAngle % (360 / count($this->colorWheel))) / (360 / count($this->colorWheel));
+        while ($high - $low > 0.01) {
+            $mid = ($low + $high) / 2;
+            $testAngle = fmod($mid, 360);
+            $weight = ($testAngle - $this->colorWheel[$segmentIndex][3]) / (360 / count($this->colorWheel));
             $newColor = $color1->blendColors($color2, $weight);
             $currentDistance = $this->digitalDistance($this->normalizeColor($newColor));
-            
-            if ($currentDistance > $bestDistance) {
-                break;
+
+            if ($currentDistance < $bestDistance) {
+                $bestDistance = $currentDistance;
+                $bestAngle = $testAngle;
+                $high = $mid;
+            } else {
+                $low = $mid + 0.01;
             }
-            
-            $bestDistance = $currentDistance;
-            $bestAngle = $testAngle;
-            $i += $step;
         }
 
         return $bestAngle;
@@ -153,7 +149,7 @@ class RYB extends Color {
             $segmentIndex = count($this->colorWheel) - 1;
             $weight = 0;
         }
-        
+
         $color1 = new RYB(...$this->colorWheel[$segmentIndex]);
         $color2 = new RYB(...$this->colorWheel[($segmentIndex + 1) % count($this->colorWheel)]);
 
