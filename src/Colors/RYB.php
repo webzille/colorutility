@@ -72,7 +72,13 @@ class RYB extends Color {
 
     public function digitalDistance(Color $color): float
     {
-        return $this->asLAB()->digitalDistance($color);
+        list($r, $y, $b) = $color->asRYB()->asArray();
+
+        $deltaR = abs($this->r - $r);
+        $deltaY = abs($this->y - $y);
+        $deltaB = abs($this->b - $b);
+
+        return sqrt($deltaR ** 2 + $deltaY ** 2 + $deltaB ** 2);
     }
 
     public function visibleDifference(Color $color): float
@@ -85,45 +91,24 @@ class RYB extends Color {
         $bestDistance = PHP_FLOAT_MAX;
         $bestAngle = 0;
 
-        foreach ($this->colorWheel as $colorData) {
-            $colorObject = new RYB(...$colorData);
-            $distance = $this->digitalDistance($this->normalizeColor($colorObject));
+        foreach ($this->colorWheel as $index => $colorData) {
+            $color1 = new RYB(...$colorData);
+            $nextIndex = ($index + 1) % count($this->colorWheel);
+            $color2 = new RYB(...$this->colorWheel[$nextIndex]);
 
-            if ($distance < $bestDistance) {
-                $bestDistance = $distance;
-                $bestAngle = $colorData[3];
-
-                if ($this->asString() === $colorObject->asString()) {
-                    return $bestAngle;
-                }
+            if ($this->normalizeColor($color1)->digitalDistance($this) < 1) {
+                return $colorData[3];
             }
-        }
 
-        $segmentIndex = floor($bestAngle / (360 / count($this->colorWheel)));
-        $nextSegmentIndex = ($segmentIndex + 1) % count($this->colorWheel);
+            for ($angle = $colorData[3]; $angle < $colorData[3] + 30; $angle += 1) {
+                $weight = $this->getWeight($angle, $index);
+                $blendedColor = $color1->blendColors($color2, $weight);
+                $distance = $this->normalizeColor($blendedColor)->digitalDistance($this);
 
-        $color1 = new RYB(...$this->colorWheel[$segmentIndex]);
-        $color2 = new RYB(...$this->colorWheel[$nextSegmentIndex]);
-
-        $low = $this->colorWheel[$segmentIndex][3];
-        $high = $this->colorWheel[$nextSegmentIndex][3];
-        if ($high < $low) {
-            $high += 360;
-        }
-
-        while ($high - $low > 0.01) {
-            $mid = ($low + $high) / 2;
-            $testAngle = fmod($mid, 360);
-            $weight = ($testAngle - $this->colorWheel[$segmentIndex][3]) / (360 / count($this->colorWheel));
-            $newColor = $color1->blendColors($color2, $weight);
-            $currentDistance = $this->digitalDistance($this->normalizeColor($newColor));
-
-            if ($currentDistance < $bestDistance) {
-                $bestDistance = $currentDistance;
-                $bestAngle = $testAngle;
-                $high = $mid;
-            } else {
-                $low = $mid + 0.01;
+                if ($distance < $bestDistance) {
+                    $bestDistance = $distance;
+                    $bestAngle = $angle;
+                }
             }
         }
 
@@ -132,33 +117,40 @@ class RYB extends Color {
 
     public function findColorByAngle(float $angle): RYB
     {
-        if ($this->isGrayscale()) {
+        if ($this->isGrayScale()) {
             return clone $this;
         }
 
-        $angle = $this->currentAngle() + $angle;
-
-        if ($angle >= 360) {
-            $angle -= 360;
-        }
-
-        if ($angle < 0) {
-            $angle += 360;
-        }
-
-        $segmentIndex = floor($angle / (360 / count($this->colorWheel)));
-        $weight = fmod($angle, 360 / count($this->colorWheel)) / (360 / count($this->colorWheel));
-
-        if ($angle === 0 || $angle === 360) {
-            $segmentIndex = count($this->colorWheel) - 1;
-            $weight = 0;
-        }
+        $angle = fmod($this->currentAngle() + $angle, 360);
+        [$segmentIndex, $nextSegmentIndex] = $this->getSegments($angle);
+        $weight = $this->getWeight($angle, $segmentIndex);
 
         $color1 = new RYB(...$this->colorWheel[$segmentIndex]);
-        $color2 = new RYB(...$this->colorWheel[($segmentIndex + 1) % count($this->colorWheel)]);
+        $color2 = new RYB(...$this->colorWheel[$nextSegmentIndex]);
 
         $newColor = $color1->blendColors($color2, $weight);
         return $this->normalizeColor($newColor);
+    }
+
+    private function getWeight(float $angle, int $segmentIndex): float
+    {
+        if ($angle === 0 || $angle === 360) {
+            return 0;
+        }
+
+        return ($angle - $this->colorWheel[$segmentIndex][3]) / (360 / count($this->colorWheel));
+    }
+
+    private function getSegments(float $angle): array
+    {
+        $segmentIndex = floor($angle / (360 / count($this->colorWheel)));
+        $nextSegmentIndex = ($segmentIndex + 1) % count($this->colorWheel);
+
+        if ($angle === 0 || $angle === 360) {
+            $segmentIndex = count($this->colorWheel) - 1;
+        }
+
+        return [$segmentIndex, $nextSegmentIndex];
     }
 
     public function normalizeColor(RYB $color, int $dampingFactor = 1): RYB
@@ -186,14 +178,14 @@ class RYB extends Color {
     {
         $weight = (1 - cos($weight * M_PI)) / 2;
         
-        $red = $this->r * (1 - $weight) + $color->getRed() * $weight;
+        $red    = $this->r * (1 - $weight) + $color->getRed()    * $weight;
         $yellow = $this->y * (1 - $weight) + $color->getYellow() * $weight;
-        $blue = $this->b * (1 - $weight) + $color->getBlue() * $weight;
+        $blue   = $this->b * (1 - $weight) + $color->getBlue()   * $weight;
 
         return new RYB($red, $yellow, $blue);
     }
 
-    public function isGrayscale(): bool
+    public function isGrayScale(): bool
     {
         return abs($this->r - $this->y) === 0 && abs($this->y - $this->b) === 0 && abs($this->b - $this->r) === 0;
     }
