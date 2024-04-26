@@ -81,12 +81,20 @@ class LAB extends Color
         return new LAB($this->L, $newA, $newB);
     }
 
+    public function currentAngle()
+    {
+        return $this->calculateAngle(new LAB(53, 80, 67));
+    }
+
     public function digitalDistance(Color $color): float
     {
-        list($L1, $a1, $b1) = $this->asArray();
-        list($L2, $a2, $b2) = $color->asLAB()->asArray();
+        list($L, $a, $b) = $color->asLAB()->asArray();
 
-        return sqrt((($L2 - $L1) ** 2) + (($a2 - $a1) ** 2) + (($b2 - $b1) ** 2));
+        $deltaL = $this->L - $L;
+        $deltaA = $this->a - $a;
+        $deltaB = $this->b - $b;
+
+        return sqrt($deltaL ** 2 + $deltaA ** 2 + $deltaB ** 2);
     }
 
     public function findColorAtDistance(float $distance, float $tolerance = 0.1, int $maxIterations = 10000): LAB
