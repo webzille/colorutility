@@ -14,7 +14,7 @@ $colorWheel = [
     'Blue'          => [0,   0,   255],
     'Blue-Green'    => [0,   128, 255],
     'Green'         => [0,   255, 255],
-    'Yellow-Green'  => [0,   255, 128],
+    'Yellow-Green'  => [0,   255, 69 ],
     'Yellow'        => [0,   255, 0  ],
     'Yellow-Orange' => [69,  255, 0  ],
     'Orange'        => [128, 255, 0  ],
@@ -31,15 +31,25 @@ foreach ($colorWheel as $colorName => $color) {
     $ryb[$colorName] = $object;
 }
 
-echo "\n\nColor stops of the RYB color wheel\n\n";
-foreach ($ryb as $colorName => $colorStop) {
-    echo $colorStop->viewColor($colorName);
-}
-
 echo "\n\nThe Color wheel\n\n";
 
+$colors = [];
 $object = $ryb['Red']->asRGB();
 for ($i=0; $i <= 360; $i++) {
     $newAngle = $object->findColorByAngle($i);
     echo $newAngle->viewColor("Angle: $i; Color:");
+
+    if ($i % 30 === 0 && $i !== 360) {
+        $colors[$i] = $newAngle;
+    }
+}
+
+echo "\n\nThe color at every 30 angles in the color wheel\n\n";
+foreach ($colors as $angle => $colorStop) {
+    echo $colorStop->viewColor($angle);
+}
+
+echo "\n\nColor stops of the RYB color wheel\n\n";
+foreach ($ryb as $colorName => $colorStop) {
+    echo $colorStop->viewColor($colorName);
 }
