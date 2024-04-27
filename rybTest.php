@@ -2,135 +2,44 @@
 
 require 'vendor/autoload.php';
 
-use Webzille\ColorUtility\Colors\RGB;
 use Webzille\ColorUtility\Colors\RYB;
-use Webzille\ColorUtility\SetColor;
 
 echo "<pre>";
 
-$object = new rgb(255, 0, 0);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
+$colorWheel = [
+    'Red'           => [255, 0,   0  ],
+    'Red-Violet'    => [255, 0,   128],
+    'Violet'        => [255, 0,   255],
+    'Blue-Violet'   => [128, 0,   255],
+    'Blue'          => [0,   0,   255],
+    'Blue-Green'    => [0,   128, 255],
+    'Green'         => [0,   255, 255],
+    'Yellow-Green'  => [0,   255, 128],
+    'Yellow'        => [0,   255, 0  ],
+    'Yellow-Orange' => [69,  255, 0  ],
+    'Orange'        => [128, 255, 0  ],
+    'Red-Orange'    => [255, 128, 0  ]
+];
 
-$object = new rgb(199, 21, 133);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
+$ryb = [];
+foreach ($colorWheel as $colorName => $color) {
+    $object = new RYB(...$color);
+    $rgb = $object->asRGB();
+    echo $rgb->viewColor($colorName);
+    echo $rgb->findColorByAngle(0)->viewColor("Angle: 0;") . PHP_EOL;
 
-$object = new rgb(148, 0, 211);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
+    $ryb[$colorName] = $object;
+}
 
-$object = new rgb(138, 43, 226);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
+echo "\n\nColor stops of the RYB color wheel\n\n";
+foreach ($ryb as $colorName => $colorStop) {
+    echo $colorStop->viewColor($colorName);
+}
 
-$object = new rgb(0, 0, 255);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
+echo "\n\nThe Color wheel\n\n";
 
-$object = new rgb(0, 245, 255);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
-
-$object = new rgb(0, 255, 0);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
-
-$object = new rgb(173, 255, 47);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
-
-$object = new rgb(255, 255, 0);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
-
-$object = new rgb(255, 215, 0);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
-
-$object = new rgb(255, 165, 0);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
-
-$object = new rgb(200, 76, 0);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
-echo PHP_EOL;
-
-echo "Color stops of the RYB color wheel";
-
-echo PHP_EOL;
-
-$Red = new RYB(255, 0, 0);
-echo $Red->viewColor('Red');
-$RedViolet = new RYB(199, 21, 133);
-echo $RedViolet->viewColor('Red-Violet');
-$Violet = new RYB(148, 0, 211);
-echo $Violet->viewColor('Violet');
-$BlueViolet = new RYB(138, 43, 226);
-echo $BlueViolet->viewColor('Blue-Violet');
-$Blue = new RYB(0, 0, 255);
-echo $Blue->viewColor('Blue');
-$BlueGreen = new RYB(0, 125, 255);
-echo $BlueGreen->viewColor('Blue-Green');
-$Green = new RYB(0, 255, 255);
-echo $Green->viewColor('Green');
-$YellowGreen = new RYB(47, 255, 129);
-echo $YellowGreen->viewColor('Yellow-Green');
-$Yellow = new RYB(0, 255, 0);
-echo $Yellow->viewColor('Yellow');
-$YellowOrange = new RYB(47, 255, 0);
-echo $YellowOrange->viewColor('Yellow-Orange');
-$Orange = new RYB(139, 255, 0);
-echo $Orange->viewColor('Orange');
-$RedOrange = new RYB(200, 123, 0);
-echo $RedOrange->viewColor('Red-Orange');
-
-echo "\n\n\nThe Color wheel\n\n";
-
-$object = SetColor::fromString("rgb(255, 0, 0)");
-echo $object->viewColor("Current Color:");
-
-$colors = [];
+$object = $ryb['Red']->asRGB();
 for ($i=0; $i <= 360; $i++) {
     $newAngle = $object->findColorByAngle($i);
     echo $newAngle->viewColor("Angle: $i; Color:");
 }
-
-echo PHP_EOL;
-
-$object = new rgb(154, 44, 0);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(180)->viewColor("Angle: 180; Color:");
-echo PHP_EOL;
-
-$colorWheel = [
-    'Red'          => [255, 0, 0],
-    'Red-Orange'   => [255, 83, 0],
-    'Orange'       => [255, 165, 0],
-    'Yellow-Orange' => [255, 215, 0],
-    'Yellow'       => [255, 255, 0],
-    'Yellow-Green' => [173, 255, 47],
-    'Green'        => [0, 128, 0],
-    'Blue-Green'   => [0, 139, 139],
-    'Blue'         => [0, 0, 255],
-    'Blue-Violet'  => [138, 43, 226],
-    'Violet'       => [148, 0, 211],
-    'Red-Violet'   => [199, 21, 133]
-];
-
-$object = new rgb(0, 128, 0);
-echo $object->viewColor("Current Color:");
-echo $object->findColorByAngle(-30)->viewColor("Angle: -30; Color:");
-echo PHP_EOL;
