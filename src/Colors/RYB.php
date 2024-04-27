@@ -21,7 +21,7 @@ class RYB extends Color {
         [0,   0,   255, 120],   // 120 Blue
         [0,   128, 255, 150],   // 150 Blue-Green
         [0,   255, 255, 180],   // 180 Green
-        [0,   255, 129, 210],   // 210 Yellow-Green
+        [0,   255, 69,  210],   // 210 Yellow-Green
         [0,   255, 0,   240],   // 240 Yellow
         [69,  255, 0,   270],   // 270 Yellow-Orange
         [128, 255, 0,   300],   // 300 Orange
