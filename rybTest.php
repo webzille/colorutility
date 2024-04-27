@@ -2,9 +2,7 @@
 
 require 'vendor/autoload.php';
 
-use Webzille\ColorUtility\Colors\LAB;
 use Webzille\ColorUtility\Colors\RGB;
-use Webzille\ColorUtility\Colors\RGBA;
 use Webzille\ColorUtility\Colors\RYB;
 use Webzille\ColorUtility\SetColor;
 
@@ -35,7 +33,7 @@ echo $object->viewColor("Current Color:");
 echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
 echo PHP_EOL;
 
-$object = new rgb(0, 137, 139);
+$object = new rgb(0, 245, 255);
 echo $object->viewColor("Current Color:");
 echo $object->findColorByAngle(0)->viewColor("Angle: 0; Color:");
 echo PHP_EOL;
@@ -84,7 +82,7 @@ $BlueViolet = new RYB(138, 43, 226);
 echo $BlueViolet->viewColor('Blue-Violet');
 $Blue = new RYB(0, 0, 255);
 echo $Blue->viewColor('Blue');
-$BlueGreen = new RYB(0, 69, 139);
+$BlueGreen = new RYB(0, 125, 255);
 echo $BlueGreen->viewColor('Blue-Green');
 $Green = new RYB(0, 255, 255);
 echo $Green->viewColor('Green');
@@ -131,3 +129,8 @@ $colorWheel = [
     'Violet'       => [148, 0, 211],
     'Red-Violet'   => [199, 21, 133]
 ];
+
+$object = new rgb(0, 128, 0);
+echo $object->viewColor("Current Color:");
+echo $object->findColorByAngle(-30)->viewColor("Angle: -30; Color:");
+echo PHP_EOL;
