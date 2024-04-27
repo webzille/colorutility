@@ -25,6 +25,11 @@ abstract class Color {
 
     abstract function isLight();
 
+    public function isDark(): bool
+    {
+        return !$this->isLight();
+    }
+
     abstract function white();
 
     abstract function black();
