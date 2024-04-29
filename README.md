@@ -1,6 +1,6 @@
 # Webzille Color Utility
 
-The Webzille Color Utility is a comprehensive PHP package designed for advanced color manipulation across multiple color models, including CylindricalLAB, HEX, HSL, HSLA, HSV, LAB, RGB, RGBA, RYB, and CMYK. This powerful utility allows developers to perform various operations on colors, such as conversions, calculations, and transformations, using an intuitive and flexible API.
+The Webzille Color Utility is a comprehensive PHP package designed for advanced color manipulation across multiple color models, including CylindricalLAB, HEX, HSL, HSLA, HSV, LAB, RGB, RGBA and RYB. This powerful utility allows developers to perform various operations on colors, such as conversions, calculations, and transformations, using an intuitive and flexible API.
 
 ## Features
 
@@ -18,6 +18,10 @@ To use the Webzille Color Utility in your project, include it via Composer:
 composer require webzille/colorutility
 ```
 
+## Color Space / Wheel
+
+At the moment every websafe color model uses the traditional painter's color wheel where the primary colors are red, yellow and blue (RYB), including HSL. Only HSV, LAB and CylindricalLAB uses their own angle manipulating methods and their own color space.
+
 ## Usage
 
 ### Basic Usage
@@ -33,6 +37,71 @@ $rgbColor = new RGB(255, 0, 0);  // Red in RGB
 $rybColor = new RYB(255, 0, 0);  // Red in RYB
 $labColor = new LAB(53.23288178584245, 80.10930952982204, 67.22006831026425);  // Red in LAB
 ```
+
+### Setting color from string factory
+
+You may set a color object from string from any of the websafe color formats (RGBA, RGB, HSLA, HSL, HEX and named colors) using the `SetCollor::fromString(string $string)` factory.
+
+```php
+use Webzille\ColorUtility\SetColor;
+
+$HexString = "#ffcc00";
+$HexObject = SetColor::fromString($HexString);
+
+$RGBString = "rgb(255, 0, 0);";
+$RGBObject = SetColor::fromString($RGBString);
+
+$RGBAString = "rgba(153, 255, 46, 0.4)";
+$RGBAObject = SetColor::fromString($RGBAString);
+
+$HSLAString = "hsla(0, 41%, 51%, 0.3)";
+$HSLAObject = SetColor::fromString($HSLAString);
+
+$HSLString = "hsl(146, 41%, 51%)";
+$HSLObject = SetColor::fromString($HSLString);
+
+$NamedString = "steelblue";
+$NamedObject = SetColor::fromString($NamedString);
+```
+
+### Catching colors from string
+
+You can catch color from strings for whatever parsing you need.
+
+```php
+$value = ".cssRuleset {
+    font-size: 1.3em;
+    color: #ffcc00;
+    border: 1px solid rgb(124, 20, 0);
+    background-color: transparent;
+}";
+
+$transparency = true;
+preg_match_all(Colors::getMatchingPattern($transparency), $value, $matches);
+
+print_r($matches[1]);
+
+// Array
+// (
+//     [0] => #ffcc00
+//     [1] => rgb(124, 20, 0)
+//     [2] => transparent
+// )
+```
+
+If you set `$transparency` to false, than it would ignore the 'transparent' colors.
+
+### Viewing color
+
+The color class provides a way to view a sample of the color that the object holds. The method accepts an optional string parameter that allows you to add a label to the color sample to help keep track of each color object.
+
+```php
+echo $NamedString->viewColor("The optional label");
+
+echo $RGBAObject->viewColor();
+```
+
+The method detects if the object is in a websafe color format and converts to RGB in case the color object is not in a websafe color format (like LAB or RYB).
 
 ### Converting Colors
 
@@ -51,6 +120,8 @@ Adjust color properties, blend colors, or calculate color harmonies.
 $complementaryRGB = $rgbColor->complementary(); // Green
 $blendedRYB = $rybColor->blendColors(new RYB(0, 0, 255), 0.5); // Blend red and blue in RYB
 ```
+
+Blending colors are done only within RYB color space at the moment. You may convert the color objects to RYB, blend them and then convert the resulting color back to your own color model you using. The weight is a number between 0 and 1 that determines how the colors blend. If weight is 0, the blend will show only the first color. If weight is 1, it will show only the second color. The closer the weight is to 1, the more the blend will favor the second color. This method smooths out the transition between colors, making the blend gradual and more natural-looking.
 
 ### Analyzing Colors
 
@@ -87,12 +158,12 @@ $labFromRGB = $rgbColor->asLAB();
 
 // RYB to RGB (and then to other formats)
 $rgbFromRYB = $rybColor->asRGB();
-$hexFromRYB = $rgbFromRYB->asHEX();
-$hslFromRYB = $rgbFromRYB->asHSL();
+$hexFromRYB = $rybColor->asHEX();
+$hslFromRYB = $rybColor->asHSL();
 
-// LAB to RGB and then to HEX
+// LAB to RGB and to HEX
 $rgbFromLAB = $labColor->asRGB();
-$hexFromLAB = $rgbFromLAB->asHEX();
+$hexFromLAB = $labColor->asHEX();
 ```
 
 Every color format has a method to convert to any of the other available formats.

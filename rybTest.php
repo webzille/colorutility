@@ -3,9 +3,11 @@
 require 'vendor/autoload.php';
 
 use Webzille\ColorUtility\Colors\RYB;
+use Webzille\ColorUtility\SetColor;
 
 echo "<pre>";
 
+// The color stops for the RYB color wheel (traditional painter's color wheel)
 $colorWheel = [
     'Red'           => [255, 0,   0  ],
     'Red-Violet'    => [255, 0,   128],
@@ -33,8 +35,10 @@ foreach ($colorWheel as $colorName => $color) {
 
 echo "\n\nThe Color wheel\n\n";
 
-$colors = [];
 $object = $ryb['Red']->asRGB();
+// $object = SetColor::fromString("rgb(211, 210, 212");
+echo $object->viewColor("Original Color");
+$colors = [];
 for ($i=0; $i <= 360; $i++) {
     $newAngle = $object->findColorByAngle($i);
     echo $newAngle->viewColor("Angle: $i; Color:");
