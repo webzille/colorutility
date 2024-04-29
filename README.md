@@ -85,7 +85,7 @@ print_r($matches[1]);
 // )
 ```
 
-If you set `$transparency` to false, than it woul ignore the 'transparent' colors.
+If you set `$transparency` to false, than it would ignore the 'transparent' colors.
 
 ### Viewing color
 
