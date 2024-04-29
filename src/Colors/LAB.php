@@ -2,7 +2,7 @@
 
 namespace Webzille\ColorUtility\Colors;
 
-use Webzille\ColorUtility\Calculations\DeltaE2000;
+use Webzille\ColorUtility\Calculations\CieDelta;
 use Webzille\ColorUtility\Color;
 
 class LAB extends Color
@@ -70,9 +70,7 @@ class LAB extends Color
         $angleRad = deg2rad($angle);
 
         $magnitude = sqrt($this->a ** 2 + $this->b ** 2);
-
         $currentAngleRad = atan2($this->b, $this->a);
-
         $newAngleRad = $currentAngleRad + $angleRad;
 
         $newA = $magnitude * cos($newAngleRad);
@@ -88,16 +86,10 @@ class LAB extends Color
 
     public function digitalDistance(Color $color): float
     {
-        list($L, $a, $b) = $color->asLAB()->asArray();
-
-        $deltaL = $this->L - $L;
-        $deltaA = $this->a - $a;
-        $deltaB = $this->b - $b;
-
-        return sqrt($deltaL ** 2 + $deltaA ** 2 + $deltaB ** 2);
+        return (new CieDelta)->E76($this, $color->asLAB());
     }
 
-    public function findColorAtDistance(float $distance, float $tolerance = 0.1, int $maxIterations = 10000): LAB
+    public function findColorByDistance(float $distance, float $tolerance = 0.1, int $maxIterations = 10000): LAB
     {
         list($L1, $a1, $b1) = $this->asArray();
 
@@ -116,9 +108,7 @@ class LAB extends Color
 
             $newColor = new LAB($newL, $newA, $newB);
             $newDistance = $this->digitalDistance($newColor);
-
             $distanceDiff = abs($newDistance - $distance);
-
             $scaleFactor = $minScale + ($distance - $minScale) * ($distanceDiff / $distance);
 
             if ($distanceDiff <= $tolerance) {
@@ -135,10 +125,10 @@ class LAB extends Color
 
     public function visibleDifference(Color $color): float
     {
-        return (new DeltaE2000)->calculate($this, $color->asLAB());
+        return (new CieDelta)->E2000($this, $color->asLAB());
     }
 
-    public function findColorAtDifference(float $difference, float $tolerance = 0.1, int $maxIterations = 10000): self
+    public function findColorByDifference(float $difference, float $tolerance = 0.1, int $maxIterations = 10000): self
     {
         list($L1, $a1, $b1) = $this->asArray();
 
@@ -202,16 +192,10 @@ class LAB extends Color
         return new LAB($newL, max(-128, min(127, $newA)), max(-128, min(127, $newB)));
     }
 
-    public function angularDeviance(float $percent): self
+    public function adjustShade(int $shade): self
     {
-        $percent = ($percent > 200) ? ($percent - 200) / 100 : $percent / 100;
-
-        return $this->findColorByAngle(180 * $percent);
-    }
-
-    public function findColorByShade(int $shade): self
-    {
-        return new LAB($shade, $this->a, $this->b);
+        $newL = min(100, max(0, $this->L + $this->L * ($shade / 100)));
+        return new LAB($newL, $this->a, $this->b);
     }
 
     public function getLightness(): float

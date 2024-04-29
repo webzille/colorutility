@@ -21,7 +21,7 @@ class RYB extends Color {
         [0,   0,   255, 120],   // 120 Blue
         [0,   128, 255, 150],   // 150 Blue-Green
         [0,   255, 255, 180],   // 180 Green
-        [0,   255, 129, 210],   // 210 Yellow-Green
+        [0,   255, 69,  210],   // 210 Yellow-Green
         [0,   255, 0,   240],   // 240 Yellow
         [69,  255, 0,   270],   // 270 Yellow-Orange
         [128, 255, 0,   300],   // 300 Orange
@@ -115,7 +115,7 @@ class RYB extends Color {
         return $bestAngle;
     }
 
-    public function findColorByAngle(float $angle): RYB
+    public function findColorByAngle(float $angle): self
     {
         if ($this->isGrayScale()) {
             return clone $this;
@@ -137,7 +137,7 @@ class RYB extends Color {
         if ($angle === 0 || $angle === 360) {
             return 0;
         }
-
+        
         return ($angle - $this->colorWheel[$segmentIndex][3]) / (360 / count($this->colorWheel));
     }
 
@@ -153,7 +153,7 @@ class RYB extends Color {
         return [$segmentIndex, $nextSegmentIndex];
     }
 
-    public function normalizeColor(RYB $color, int $dampingFactor = 1): RYB
+    public function normalizeColor(RYB $color, int $dampingFactor = 1): self
     {
         list($targetR, $targetY, $targetB) = $color->asArray();
 
@@ -190,29 +190,37 @@ class RYB extends Color {
         return abs($this->r - $this->y) === 0 && abs($this->y - $this->b) === 0 && abs($this->b - $this->r) === 0;
     }
 
-    public function findColorAtDifference(float $difference): self
+    public function findColorByDifference(float $difference): self
     {
-        return $this->asLAB()->findColorAtDifference($difference)->asRYB();
+        return $this->asLAB()->findColorByDifference($difference)->asRYB();
     }
 
-    public function findColorAtDistance(float $distance): self
+    public function findColorByDistance(float $distance): self
     {
-        return $this->asLAB()->findColorAtDistance($distance)->asRYB();
+        return $this->asLAB()->findColorByDistance($distance)->asRYB();
     }
 
-    public function findColorByShade(int $shade): self
+    public function adjustShade(int $shade): self
     {
-        return $this->asLAB()->findColorByShade($shade)->asRYB();
+        return $this->asLAB()->adjustShade($shade)->asRYB();
     }
 
     public function linearDeviance(float $percent): self
     {
-        return $this->asLAB()->linearDeviance($percent)->asRYB();
-    }
+        if ($percent === 0) {
+            return clone $this;
+        }
 
-    public function angularDeviance(float $percent): self
-    {
-        return $this->asLAB()->angularDeviance($percent)->asRYB();
+        $adjustedPercent = $percent / 100;
+        $directionR = ($this->r > 127) ? -1 : 1;
+        $directionY = ($this->y > 127) ? -1 : 1;
+        $directionB = ($this->b > 127) ? -1 : 1;
+
+        $newR = max(0, min(255, $this->r + $directionR * $adjustedPercent * (255 - $this->r)));
+        $newY = max(0, min(255, $this->y + $directionY * $adjustedPercent * (255 - $this->y)));
+        $newB = max(0, min(255, $this->b + $directionB * $adjustedPercent * (255 - $this->b)));
+
+        return new RYB($newR, $newY, $newB);
     }
 
     public function getRed(): string

@@ -94,21 +94,28 @@ abstract class Color {
 
     abstract function calculateAngle(Color $angle);
 
+    abstract function currentAngle();
+
     abstract function digitalDistance(Color $color);
 
-    abstract function findColorAtDistance(float $distance);
+    abstract function findColorByDistance(float $distance);
 
     abstract function visibleDifference(Color $color);
 
-    abstract function findColorAtDifference(float $difference);
+    abstract function findColorByDifference(float $difference);
 
     abstract function findColorByAngle(float $angle);
 
-    abstract function findColorByShade(int $shade);
+    abstract function adjustShade(int $shade);
 
     abstract function linearDeviance(float $percent);
 
-    abstract function angularDeviance(float $percent);
+    public function angularDeviance(float $percent): self
+    {
+        $percent = ($percent > 200) ? ($percent - 200) / 100 : $percent / 100;
+
+        return $this->findColorByAngle(180 * $percent);
+    }
 
     public function complementary(): array
     {
@@ -155,7 +162,7 @@ abstract class Color {
         ];
     }
 
-    public function monochromaticTone(): array
+    public function monochromaticTones(): array
     {
         // Generate a few different tones of the same color
         $monochromaticTones = [];
@@ -167,13 +174,13 @@ abstract class Color {
         return $monochromaticTones;
     }
 
-    public function monochromaticShade(): array
+    public function monochromaticShades(): array
     {
         // Generate shades of the base color by adjusting the lightness
         $monochromaticShades = [];
 
         for($shade = 0; $shade <= 100; $shade += 5) {
-            $monochromaticShades[] = $this->findColorByShade($shade);
+            $monochromaticShades[] = $this->adjustShade($shade);
         }
 
         return $monochromaticShades;

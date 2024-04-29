@@ -34,13 +34,7 @@ class HSV extends Color
 
     public function isLight(): bool
     {
-        $brightnessWeight = 0.8;
-        $saturationWeight = 0.2;
-        $lightnessThreshold = 0.7;
-
-        $lightness = ($this->v * $brightnessWeight) + ((1 - $this->s) * $saturationWeight);
-
-        return $lightness >= $lightnessThreshold;
+        return $this->asRGB()->isLight();
     }
 
     public function white(): self
@@ -51,6 +45,16 @@ class HSV extends Color
     public function black(): self
     {
         return new HSV(0, 0, 0);
+    }
+
+    public function digitalDistance(Color $color): float
+    {
+        return $this->asLAB()->digitalDistance($color);
+    }
+
+    public function visibleDifference(Color $color): float
+    {
+        return $this->asLab()->visibleDifference($color);
     }
 
     public function calculateAngle(Color $color): float
@@ -65,14 +69,9 @@ class HSV extends Color
         return $angle;
     }
 
-    public function digitalDistance(Color $color): float
+    public function currentAngle(): float
     {
-        return $this->asLAB()->digitalDistance($color);
-    }
-
-    public function visibleDifference(Color $color): float
-    {
-        return $this->asLab()->visibleDifference($color);
+        return $this->calculateAngle(new HSV(0, 100, 100));
     }
 
     public function findColorByAngle(float $angle): self
@@ -88,19 +87,19 @@ class HSV extends Color
         return new HSV($newHue, $this->s, $this->v);
     }
 
-    public function findColorAtDifference(float $difference): self
+    public function findColorByDifference(float $difference): self
     {
-        return $this->asLAB()->findColorAtDifference($difference)->asHSV();
+        return $this->asLAB()->findColorByDifference($difference)->asHSV();
     }
 
-    public function findColorAtDistance(float $distance): self
+    public function findColorByDistance(float $distance): self
     {
-        return $this->asLAB()->findColorAtDistance($distance)->asHSV();
+        return $this->asLAB()->findColorByDistance($distance)->asHSV();
     }
 
-    public function findColorByShade(int $shade): self
+    public function adjustShade(int $shade): self
     {
-        return $this->asLAB()->findColorByShade($shade)->asHSV();
+        return $this->asLAB()->adjustShade($shade)->asHSV();
     }
 
     public function linearDeviance(float $percent): self

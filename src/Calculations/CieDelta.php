@@ -2,9 +2,9 @@
 
 namespace Webzille\ColorUtility\Calculations;
 
-use Webzille\ColorUtility\Colors\LAB;
+use Webzille\ColorUtility\Color;
 
-class DeltaE2000 {
+class CieDelta {
 
     // Lightness weight factor
     private const KL = 1;
@@ -14,6 +14,15 @@ class DeltaE2000 {
 
     // Hue weight factor
     private const KH = 1;
+
+    // Lightness Scaling factor
+    private const SL = 1;
+
+    // Chroma Scaling factor
+    private const SC = 1;
+
+    // Hue Scaling factor
+    private const SH = 1;
 
     // ¯L′
     private function averageLightness($L1, $L2)
@@ -43,6 +52,18 @@ class DeltaE2000 {
     private function transformA($a, $adjustChroma)
     {
         return $a * (1 + $adjustChroma);
+    }
+
+    // Δa
+    private function differenceInA($a1, $a2)
+    {
+        return $a2 - $a1;
+    }
+
+    // Δb
+    private function differenceInB($b1, $b2)
+    {
+        return $b2 - $b1;
     }
 
     // C′1 && C′2
@@ -171,10 +192,10 @@ class DeltaE2000 {
     // For reference on the formulas
     // https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/ciede2000noteCRNA.pdf
     // http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE2000.html
-    public function calculate(LAB $lab1, LAB $lab2)
+    public function E2000(Color $lab1, Color $lab2)
     {
-        list($L1, $a1, $b1) = $lab1->asArray();
-        list($L2, $a2, $b2) = $lab2->asArray();
+        list($L1, $a1, $b1) = $lab1->asLAB()->asArray();
+        list($L2, $a2, $b2) = $lab2->asLAB()->asArray();
 
         $averageLightness = $this->averageLightness($L1, $L2);
         $chroma1 = $this->chroma($a1, $b1);
@@ -208,5 +229,40 @@ class DeltaE2000 {
         $correctedHue = ($differenceInHue / (self::KH * $hueWeightFactor));
 
         return sqrt($normalizedLightness + $normalizedChroma + $normalizedHue + $correctedChroma * $correctedHue);
+    }
+
+    public function E94(Color $lab1, Color $lab2)
+    {
+        list($L1, $a1, $b1) = $lab1->asLAB()->asArray();
+        list($L2, $a2, $b2) = $lab2->asLAB()->asArray();
+
+        $chroma1 = $this->chroma($a1, $b1);
+        $chroma2 = $this->chroma($a2, $b2);
+        $deltaL = $this->differenceInLightness($L1, $L2);
+        $deltaC = $this->differenceInChroma($chroma1, $chroma2);
+        $hueDifference = $this->hueDifference($this->hueAngle($a1, $b1), $this->hueAngle($a2, $b2), $chroma1, $chroma2);
+        $deltaH = $this->differenceInHue($chroma1, $chroma2, $hueDifference);
+
+        return sqrt(
+            ($deltaL / (self::KL * self::SL)) ** 2 +
+            ($deltaC / (self::KC * self::SC)) ** 2 +
+            ($deltaH / (self::KH * self::SH)) ** 2
+        );
+    }
+
+    public function E76(Color $lab1, Color $lab2)
+    {
+        list($L1, $a1, $b1) = $lab1->asLAB()->asArray();
+        list($L2, $a2, $b2) = $lab2->asLAB()->asArray();
+
+        $deltaL = $this->differenceInLightness($L1, $L2);
+        $deltaA = $this->differenceInA($a1, $a2);
+        $deltaB = $this->differenceInB($b1, $b2);
+
+        return sqrt(
+            ($deltaL ** 2) +
+            ($deltaA ** 2) +
+            ($deltaB ** 2)
+        );
     }
 }
