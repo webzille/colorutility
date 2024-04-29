@@ -1,6 +1,6 @@
 # Webzille Color Utility
 
-The Webzille Color Utility is a comprehensive PHP package designed for advanced color manipulation across multiple color models, including CylindricalLAB, HEX, HSL, HSLA, HSV, LAB, RGB, RGBA, RYB, and CMYK. This powerful utility allows developers to perform various operations on colors, such as conversions, calculations, and transformations, using an intuitive and flexible API.
+The Webzille Color Utility is a comprehensive PHP package designed for advanced color manipulation across multiple color models, including CylindricalLAB, HEX, HSL, HSLA, HSV, LAB, RGB, RGBA and RYB. This powerful utility allows developers to perform various operations on colors, such as conversions, calculations, and transformations, using an intuitive and flexible API.
 
 ## Features
 
