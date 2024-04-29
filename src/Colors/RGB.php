@@ -56,22 +56,19 @@ class RGB extends Color
         return $this->asRYB()->calculateAngle($color);
     }
 
-    public function digitalDistance(Color $color): float
+    public function currentAngle(): float
     {
-        //return $this->asLAB()->digitalDistance($color);
-        list($r1, $g1, $b1) = $this->asArray();
-        list($r2, $g2, $b2) = $color->asRGB()->asArray();
-
-        return sqrt(
-            pow(($r2 - $r1), 2) +
-                pow(($g2 - $g1), 2) +
-                pow(($b2 - $b1), 2)
-        );
+        return $this->calculateAngle(new RGB(255, 0, 0));
     }
 
-    public function findColorAtDistance(float $distance): RGB
+    public function digitalDistance(Color $color): float
     {
-        return $this->asLAB()->findColorAtDistance($distance)->asRGB();
+        return $this->asLAB()->digitalDistance($color);
+    }
+
+    public function findColorByDistance(float $distance): RGB
+    {
+        return $this->asLAB()->findColorByDistance($distance)->asRGB();
 
         $originalColor = $this->asRGB();
         $tolerance = 0.1;
@@ -107,14 +104,14 @@ class RGB extends Color
         return $this->asRYB()->findColorByAngle($angle)->asRGB();
     }
 
-    public function findColorAtDifference(float $difference): self
+    public function findColorByDifference(float $difference): self
     {
-        return $this->asLAB()->findColorAtDifference($difference)->asRGB();
+        return $this->asLAB()->findColorByDifference($difference)->asRGB();
     }
 
-    public function findColorByShade(int $shade): self
+    public function adjustShade(int $shade): self
     {
-        return $this->asLAB()->findColorByShade($shade)->asRGB();
+        return $this->asLAB()->adjustShade($shade)->asRGB();
     }
 
     public function linearDeviance(float $percent): self
@@ -124,7 +121,7 @@ class RGB extends Color
 
     public function angularDeviance(float $percent): self
     {
-        return $this->asLAB()->angularDeviance($percent)->asRGB();
+        return $this->asRYB()->angularDeviance($percent)->asRGB();
     }
 
     public function getRed(): float
