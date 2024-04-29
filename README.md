@@ -20,7 +20,7 @@ composer require webzille/colorutility
 
 ## Color Space / Wheel
 
-At the moment every websafe color model uses the traditional painter's color wheel where the primary colors are red, yellow and blue (RYB), including HSL. Only HSV, LAB and CylindricalLAB uses their own angle manipulating methods and their own color space besides the the RYB color wheel.
+At the moment every websafe color model uses the traditional painter's color wheel where the primary colors are red, yellow and blue (RYB), including HSL. Only HSV, LAB and CylindricalLAB uses their own angle manipulating methods and their own color space.
 
 ## Usage
 
