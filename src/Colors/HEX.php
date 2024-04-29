@@ -96,6 +96,11 @@ class HEX extends Color {
         return $this->asRYB()->calculateAngle($color->asLAB());
     }
 
+    public function currentAngle(): float
+    {
+        return $this->calculateAngle(new HEX("ff0000"));
+    }
+
     public function digitalDistance(Color $color): float
     {
         return $this->asLAB()->digitalDistance($color->asLAB());
@@ -111,19 +116,19 @@ class HEX extends Color {
         return $this->asRYB()->findColorByAngle($angle)->asHEX();
     }
 
-    public function findColorAtDifference(float $difference): self
+    public function findColorByDifference(float $difference): self
     {
-        return $this->asLAB()->findColorAtDifference($difference)->asHEX();
+        return $this->asLAB()->findColorByDifference($difference)->asHEX();
     }
 
-    public function findColorAtDistance(float $distance): self
+    public function findColorByDistance(float $distance): self
     {
-        return $this->asLAB()->findColorAtDistance($distance)->asHEX();
+        return $this->asLAB()->findColorByDistance($distance)->asHEX();
     }
 
-    public function findColorByShade(int $shade): self
+    public function adjustShade(int $shade): self
     {
-        return $this->asLAB()->findColorByShade($shade)->asHEX();
+        return $this->asLAB()->adjustShade($shade)->asHEX();
     }
 
     public function linearDeviance(float $percent): self
@@ -133,7 +138,7 @@ class HEX extends Color {
 
     public function angularDeviance(float $percent): self
     {
-        return $this->asLAB()->angularDeviance($percent)->asHEX();
+        return $this->asRYB()->angularDeviance($percent)->asHEX();
     }
 
     public function getHEX(): string
