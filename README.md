@@ -66,6 +66,8 @@ The color class provides a way to view a sample of the color that the object hol
 
 ```php
 echo $NamedString->viewColor("The optional label");
+
+echo $RGBAObject->viewColor();
 ```
 
 The method detects if the object is in a websafe color format and converts to RGB in case the color object is not in a websafe color format (like LAB or RYB).
