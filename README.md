@@ -34,6 +34,42 @@ $rybColor = new RYB(255, 0, 0);  // Red in RYB
 $labColor = new LAB(53.23288178584245, 80.10930952982204, 67.22006831026425);  // Red in LAB
 ```
 
+### Setting color from string factory
+
+You may set a color object from string from any of the websafe color formats (RGBA, RGB, HSLA, HSL, HEX and named colors) using the `SetCollor::fromString(string $string)` factory.
+
+```php
+use Webzille\ColorUtility\SetColor;
+
+$HexString = "#ffcc00";
+$HexObject = SetColor::fromString($HexString);
+
+$RGBString = "rgb(255, 0, 0);";
+$RGBObject = SetColor::fromString($RGBString);
+
+$RGBAString = "rgba(153, 255, 46, 0.4)";
+$RGBAObject = SetColor::fromString($RGBAString);
+
+$HSLAString = "hsla(0, 41%, 51%, 0.3)";
+$HSLAObject = SetColor::fromString($HSLAString);
+
+$HSLString = "hsl(146, 41%, 51%)";
+$HSLObject = SetColor::fromString($HSLString);
+
+$NamedString = "steelblue";
+$NamedObject = SetColor::fromString($NamedString);
+```
+
+### Viewing color
+
+The color class provides a way to view a sample of the color that the object holds. The method accepts an optional string parameter that allows you to add a label to the color sample to help keep track of each color object.
+
+```php
+echo $NamedString->viewColor("The optional label");
+```
+
+The method detects if the object is in a websafe color format and converts to RGB in case the color object is not in a websafe color format (like LAB or RYB).
+
 ### Converting Colors
 
 Convert colors between different models to fit the context of your application.
@@ -87,12 +123,12 @@ $labFromRGB = $rgbColor->asLAB();
 
 // RYB to RGB (and then to other formats)
 $rgbFromRYB = $rybColor->asRGB();
-$hexFromRYB = $rgbFromRYB->asHEX();
-$hslFromRYB = $rgbFromRYB->asHSL();
+$hexFromRYB = $rybColor->asHEX();
+$hslFromRYB = $rybColor->asHSL();
 
-// LAB to RGB and then to HEX
+// LAB to RGB and to HEX
 $rgbFromLAB = $labColor->asRGB();
-$hexFromLAB = $rgbFromLAB->asHEX();
+$hexFromLAB = $labColor->asHEX();
 ```
 
 Every color format has a method to convert to any of the other available formats.
