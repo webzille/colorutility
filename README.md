@@ -60,6 +60,33 @@ $NamedString = "steelblue";
 $NamedObject = SetColor::fromString($NamedString);
 ```
 
+### Catching colors from string
+
+You can catch color from strings for whatever parsing you need.
+
+```php
+$value = ".cssRuleset {
+    font-size: 1.3em;
+    color: #ffcc00;
+    border: 1px solid rgb(124, 20, 0);
+    background-color: transparent;
+}";
+
+$transparency = true;
+preg_match_all(Colors::getMatchingPattern($transparency), $value, $matches);
+
+print_r($matches[1]);
+
+// Array
+// (
+//     [0] => #ffcc00
+//     [1] => rgb(124, 20, 0)
+//     [2] => transparent
+// )
+```
+
+If you set `$transparency` to false, than it woul ignore the 'transparent' colors.
+
 ### Viewing color
 
 The color class provides a way to view a sample of the color that the object holds. The method accepts an optional string parameter that allows you to add a label to the color sample to help keep track of each color object.
