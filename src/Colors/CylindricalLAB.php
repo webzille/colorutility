@@ -54,6 +54,11 @@ class CylindricalLAB extends Color
         return $this->asLAB()->calculateAngle($angle);
     }
 
+    public function currentAngle(): float
+    {
+        return $this->asLAB()->currentAngle();
+    }
+
     public function findColorByAngle(float $angle): self
     {
         $hueChange = 180 * sin($angle);
@@ -63,19 +68,19 @@ class CylindricalLAB extends Color
         return new CylindricalLAB($this->L, $this->c, $newHue);
     }
 
-    public function findColorAtDifference(float $difference): self
+    public function findColorByDifference(float $difference): self
     {
-        return $this->asLAB()->findColorAtDifference($difference)->asCylindrical();
+        return $this->asLAB()->findColorByDifference($difference)->asCylindrical();
     }
 
-    public function findColorAtDistance(float $distance): self
+    public function findColorByDistance(float $distance): self
     {
-        return $this->asLAB()->findColorAtDistance($distance)->asCylindrical();
+        return $this->asLAB()->findColorByDistance($distance)->asCylindrical();
     }
 
-    public function findColorByShade(int $shade): self
+    public function adjustShade(int $shade): self
     {
-        return $this->asLAB()->findColorByShade($shade)->asCylindrical();
+        return $this->asLAB()->adjustShade($shade)->asCylindrical();
     }
 
     public function digitalDistance(Color $color): float
