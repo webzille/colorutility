@@ -4,60 +4,47 @@ namespace Webzille\ColorUtility\Colors;
 
 use Webzille\ColorUtility\Color;
 
-class HSLA extends Color {
+class HSV extends Color
+{
 
     private float $h;
 
     private float $s;
 
-    private float $l;
+    private float $v;
 
-    private float $alpha;
-
-    function __construct(float $h, float $s, float $l, float $alpha = 1)
+    function __construct(?float $h, float $s, float $v)
     {
         $this->h = $h;
 
         $this->s = $s;
 
-        $this->l = $l;
-
-        $this->alpha = $alpha;
+        $this->v = $v;
     }
 
     public function asArray(): array
     {
-        return [$this->h, $this->s, $this->l, $this->alpha];
+        return [$this->h, $this->s, $this->v];
     }
 
     public function asString(): string
     {
-        return "hsla({$this->h}, {$this->s}%, {$this->l}%, {$this->alpha})";
+        return "hsv({$this->h}, {$this->s}, {$this->v})";
     }
 
     public function isLight(): bool
     {
-        return $this->asRGBA()->isLight();
+        return $this->asRGB()->isLight();
     }
 
     public function white(): self
     {
-        return new HSLA(0, 0, 100, 1);
+        return new HSV(0, 0, 100);
     }
 
     public function black(): self
     {
-        return new HSLA(0, 0, 0, 1);
-    }
-
-    public function calculateAngle(Color $color): float
-    {
-        return $this->asRYB()->calculateAngle($color);
-    }
-
-    public function currentAngle(): float
-    {
-        return $this->calculateAngle(new HSLA(0, 100, 50, 1));
+        return new HSV(0, 0, 0);
     }
 
     public function digitalDistance(Color $color): float
@@ -67,37 +54,64 @@ class HSLA extends Color {
 
     public function visibleDifference(Color $color): float
     {
-        return $this->asLAB()->visibleDifference($color);
+        return $this->asLab()->visibleDifference($color);
+    }
+
+    public function calculateAngle(Color $color): float
+    {
+        $color = $color->asHSV();
+
+        $angle = abs($this->h - $color->getHue());
+        if ($angle > 180) {
+            $angle = 360 - $angle;
+        }
+
+        return $angle;
+    }
+
+    public function currentAngle(): float
+    {
+        return $this->calculateAngle(new HSV(0, 100, 100));
     }
 
     public function findColorByAngle(float $angle): self
     {
-        return $this->asRYB()->findColorByAngle($angle)->asHSLA($this->alpha);
+        $newHue = $this->h + $angle;
+
+        $newHue = fmod(abs($newHue), 360);
+
+        if ($angle < 0) {
+            $newHue = 360 - $newHue;
+        }
+
+        return new HSV($newHue, $this->s, $this->v);
     }
 
     public function findColorByDifference(float $difference): self
     {
-        return $this->asLAB()->findColorByDifference($difference)->asHSLA($this->alpha);
+        return $this->asLAB()->findColorByDifference($difference)->asHSV();
     }
 
     public function findColorByDistance(float $distance): self
     {
-        return $this->asLAB()->findColorByDistance($distance)->asHSLA($this->alpha);
+        return $this->asLAB()->findColorByDistance($distance)->asHSV();
     }
 
     public function adjustShade(int $shade): self
     {
-        return $this->asLAB()->adjustShade($shade)->asHSLA($this->alpha);
+        return $this->asLAB()->adjustShade($shade)->asHSV();
     }
 
     public function linearDeviance(float $percent): self
     {
-        return $this->asLAB()->linearDeviance($percent)->asHSLA($this->alpha);
+        return $this->asLAB()->linearDeviance($percent)->asHSV();
     }
 
     public function angularDeviance(float $percent): self
     {
-        return $this->asRYB()->angularDeviance($percent)->asHSLA($this->alpha);
+        $percent = ($percent > 200) ? ($percent - 200) / 100 : $percent / 100;
+
+        return $this->findColorByAngle(180 * $percent);
     }
 
     public function getHue(): float
@@ -110,14 +124,14 @@ class HSLA extends Color {
         return $this->s;
     }
 
-    public function getLightness(): float
+    public function getValue(): float
     {
-        return $this->l;
+        return $this->v;
     }
 
     public function asHEX(): HEX
     {
-        return $this->asRGBA()->asHEX();
+        return $this->asRGB()->asHEX();
     }
 
     public function asLAB(): LAB
@@ -130,71 +144,67 @@ class HSLA extends Color {
         return $this->asLAB()->asCylindrical();
     }
 
-    public function asRGBA(float $alpha = null): RGBA
+    public function asRGBA(float $alpha = 1): RGBA
     {
-        $alpha = ($alpha === null) ? $this->alpha : $alpha;
-
         return $this->asRGB()->asRGBA($alpha);
     }
 
     public function asRGB(): RGB
     {
-        $hue = $this-> h / 360;
-        $saturation = $this->s / 100;
-        $lightness = $this->l / 100;
+        $h = $this->h / 360;
+        $s = $this->s / 100;
+        $v = $this->v / 100;
 
-        $chroma = (1 - abs(2 * $lightness - 1)) * $saturation;
-        $hueSector = $hue * 6;
-        $x = $chroma * (1 - abs((int) $hueSector % 2 - 1));
-
-        $r1 = $g1 = $b1 = 0;
-        switch (floor($hueSector)) {
-            case 0:
-                $r1 = $chroma;
-                $g1 = $x;
-                break;
-            case 1:
-                $r1 = $x;
-                $g1 = $chroma;
-                break;
-            case 2:
-                $g1 = $chroma;
-                $b1 = $x;
-                break;
-            case 3:
-                $g1 = $x;
-                $b1 = $chroma;
-                break;
-            case 4:
-                $r1 = $x;
-                $b1 = $chroma;
-                break;
-            case 5:
-                $r1 = $chroma;
-                $b1 = $x;
-                break;
+        if ($h < 0) {
+            $h += 360;
         }
 
-        $m = $lightness - $chroma / 2;
-        $r = ($r1 + $m) * 255;
-        $g = ($g1 + $m) * 255;
-        $b = ($b1 + $m) * 255;
+        $h_i = floor($h * 6);
+        $f = $h * 6 - $h_i;
+        $p = $v * (1 - $s);
+        $q = $v * (1 - $f * $s);
+        $t = $v * (1 - (1 - $f) * $s);
 
-        $r = max(0, min(255, $r));
-        $g = max(0, min(255, $g));
-        $b = max(0, min(255, $b));
+        switch ($h_i % 6) {
+            case 0: $r = $v; $g = $t; $b = $p; break;
+            case 1: $r = $q; $g = $v; $b = $p; break;
+            case 2: $r = $p; $g = $v; $b = $t; break;
+            case 3: $r = $p; $g = $q; $b = $v; break;
+            case 4: $r = $t; $g = $p; $b = $v; break;
+            case 5: $r = $v; $g = $p; $b = $q; break;
+        }
+
+        $r = ceil($r * 255);
+        $g = ceil($g * 255);
+        $b = ceil($b * 255);
 
         return new RGB($r, $g, $b);
     }
 
-    public function asHSL(): HSL
+    public function asHSLA(float $alpha = 1): HSLA
     {
-        return new HSL($this->h, $this->s, $this->l);
+        return $this->asHSL()->asHSLA($alpha);
     }
 
-    public function asHSV(): HSV
+    public function asHSL(): HSL
     {
-        return $this->asHSL()->asHSV();
+        $h = fmod($this->h, 360);
+        if ($h < 0) {
+            $h += 360;
+        }
+
+        $hh = round($h, 2);
+
+        $s = $this->s / 100;
+        $v = $this->v / 100;
+
+        $l = ($v * (2 - $s)) / 2;
+
+        $s = ($l < 0.5) ? ($s * $v) / ($l * 2) : ($s * $v) / (2 - $l * 2);
+        $hs = round($s * 100, 2);
+        $hl = round($l * 100, 2);
+
+        return new HSL($hh, $hs, $hl);
     }
 
     public function asRYB(): RYB
