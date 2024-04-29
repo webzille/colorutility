@@ -59,6 +59,11 @@ class RGBA extends Color {
         return $this->asRYB()->calculateAngle($color);
     }
 
+    public function currentAngle(): float
+    {
+        return $this->calculateAngle(new RGB(255, 0, 0));
+    }
+
     public function findColorByAngle(float $angle): self
     {
         return $this->asRYB()->findColorByAngle($angle)->asRGBA($this->alpha);
@@ -69,9 +74,9 @@ class RGBA extends Color {
         return $this->asLAB()->digitalDistance($color);
     }
 
-    public function findColorAtDistance(float $distance): RGBA
+    public function findColorByDistance(float $distance): RGBA
     {
-        return $this->asLAB()->findColorAtDistance($distance)->asRGBA($this->alpha);
+        return $this->asLAB()->findColorByDistance($distance)->asRGBA($this->alpha);
     }
 
     public function visibleDifference(Color $color): float
@@ -79,14 +84,14 @@ class RGBA extends Color {
         return $this->asLAB()->visibleDifference($color);
     }
 
-    public function findColorAtDifference(float $difference): self
+    public function findColorByDifference(float $difference): self
     {
-        return $this->asLAB()->findColorAtDifference($difference)->asRGBA($this->alpha);
+        return $this->asLAB()->findColorByDifference($difference)->asRGBA($this->alpha);
     }
 
-    public function findColorByShade(int $shade): self
+    public function adjustShade(int $shade): self
     {
-        return $this->asLAB()->findColorByShade($shade)->asRGBA($this->alpha);
+        return $this->asLAB()->adjustShade($shade)->asRGBA($this->alpha);
     }
 
     public function linearDeviance(float $percent): self
@@ -96,7 +101,7 @@ class RGBA extends Color {
 
     public function angularDeviance(float $percent): self
     {
-        return $this->asLAB()->angularDeviance($percent)->asRGBA($this->alpha);
+        return $this->asRYB()->angularDeviance($percent)->asRGBA($this->alpha);
     }
 
     public function getRed(): float
