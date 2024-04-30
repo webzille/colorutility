@@ -194,7 +194,7 @@ class LAB extends Color
 
     public function adjustShade(int $shade): self
     {
-        $newL = min(100, max(0, $this->L + $this->L * ($shade / 100)));
+        $newL = min(100, max(0, $this->L * ($shade / 100)));
         return new LAB($newL, $this->a, $this->b);
     }
 
