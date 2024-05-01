@@ -10,7 +10,7 @@ echo "<pre>";
 // The color stops for the RYB color wheel (traditional painter's color wheel)
 $colorWheel = [
     'Red'           => [255, 0,   0  ],
-    'Red-Orange'    => [255, 128, 0  ],
+    'Red-Orange'    => [255, 255, 0  ],
     'Orange'        => [128, 255, 0  ],
     'Yellow-Orange' => [69,  255, 0  ],
     'Yellow'        => [0,   255, 0  ],
@@ -36,7 +36,7 @@ foreach ($colorWheel as $colorName => $color) {
 echo "\n\nThe Color wheel\n\n";
 
 $object = $ryb['Red']->asRGB();
-// $object = SetColor::fromString("rgb(244, 82, 255");
+// $object = SetColor::fromString("rgb(244, 82, 255)");
 echo $object->viewColor("Original Color");
 $colors = [];
 for ($i=0; $i <= 360; $i++) {
@@ -80,6 +80,20 @@ echo "Split Complementary Color Scheme for red: \n";
 echo $ryb['Red']->viewColor();
 foreach ($ryb['Red']->splitComplementary() as $key => $scheme) {
     echo $scheme->viewColor("$key: ");
+}
+
+echo PHP_EOL;
+
+echo "Monochromatic Shades for red: \n";
+foreach ($ryb['Red']->monochromaticShades() as $key => $shade) {
+    echo $shade->viewColor("$key: ");
+}
+
+echo PHP_EOL;
+
+echo "Monochromatic Tones for red: \n";
+foreach ($ryb['Red']->monochromaticTones() as $key => $tone) {
+    echo $tone->viewColor("$key: ");
 }
 
 echo PHP_EOL;
