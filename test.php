@@ -173,7 +173,7 @@ $distance = $object->digitalDistance($object2);
 
 echo $distance . PHP_EOL;
 
-$newColor = $object->findColorAtDistance(60);
+$newColor = $object->findColorByDistance(60);
 echo $newColor->viewColor("The resulting color");
 echo $newColor->asLAB();
 
@@ -198,7 +198,7 @@ $string = "red";
 $difference = 20;
 $object = SetColor::fromString($string);
 echo $object->viewColor("The original ($string) color:");
-$newColor = $object->findColorAtDifference($difference);
+$newColor = $object->findColorByDifference($difference);
 echo $newColor->viewColor("The resulting color at difference ($difference) from $string:");
 $difference = $newColor->visibleDifference($object);
 echo "The resulting difference between the new color and the original color is: $difference\n";
