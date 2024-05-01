@@ -15,7 +15,7 @@ class RYB extends Color {
     protected array $colorWheel = [
     //  [r,   y,   b, angle]
         [255, 0,   0,   0  ],   // 0   Red
-        [255, 128, 0,   30 ],   // 30  Red-Orange
+        [255, 255, 0,   30 ],   // 30  Red-Orange
         [128, 255, 0,   60 ],   // 60  Orange
         [69,  255, 0,   90 ],   // 90  Yellow-Orange
         [0,   255, 0,   120],   // 120 Yellow
