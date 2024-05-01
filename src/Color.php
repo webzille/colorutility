@@ -120,9 +120,7 @@ abstract class Color {
     public function complementary(): array
     {
         // Rotate the base color by 180 degrees (180°)
-        return [
-            $this->findColorByAngle(180)
-        ];
+        return $this->findColorByAngle(180);
     }
 
     public function tetradic(): array
@@ -167,8 +165,8 @@ abstract class Color {
         // Generate a few different tones of the same color
         $monochromaticTones = [];
 
-        for($tone = -15; $tone <= 15; $tone += 5) {
-            $monochromaticTones[] = $this->findColorByAngle($tone);
+        for($tone = -25; $tone <= 25; $tone += 5) {
+            $monochromaticTones[$tone] = $this->findColorByAngle($tone);
         }
 
         return $monochromaticTones;
@@ -180,7 +178,7 @@ abstract class Color {
         $monochromaticShades = [];
 
         for($shade = 0; $shade <= 100; $shade += 5) {
-            $monochromaticShades[] = $this->adjustShade($shade);
+            $monochromaticShades[$shade] = $this->adjustShade($shade);
         }
 
         return $monochromaticShades;
