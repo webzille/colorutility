@@ -125,6 +125,14 @@ $blendedRYB = $rybColor->blendColors(new RYB(0, 0, 255), $weight); // Blend red 
 
 Blending colors are done only within RYB color space at the moment. You may convert the color objects to RYB, blend them and then convert the resulting color back to your own color model you using. The weight is a number between 0 and 1 that determines how the colors blend. If weight is 0, the blend will show only the first color. If weight is 1, it will show only the second color. The closer the weight is to 1, the more the blend will favor the second color. This method smooths out the transition between colors, making the blend gradual and more natural-looking.
 
+```php
+$darkerColor = $rgbColor->adjustShade(50); // 50% of the current shade
+$brighterColor = $rgbColor->adjustShade(150); // 50% brighter than it's current shade
+$sameShade - $rgbColor->adjustShade(100); // No change; 100% of it's current shade
+```
+
+According to LAB color space, all colors can be brighter then they are, even fully saturated yellow (`rgb(255, 255, 0)`). You could adjust the shade of the color (lighten it or darken it) using a percentage relative to the current brightness/shade of the color according to LAB color space.
+
 ### Analyzing Colors
 
 Calculate angles, distances, and perform advanced analysis like checking if the color is light or dark.
