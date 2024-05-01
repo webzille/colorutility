@@ -118,7 +118,9 @@ Adjust color properties, blend colors, or calculate color harmonies.
 
 ```php
 $complementaryRGB = $rgbColor->complementary(); // Green
-$blendedRYB = $rybColor->blendColors(new RYB(0, 0, 255), 0.5); // Blend red and blue in RYB
+
+$weight = 0.5;
+$blendedRYB = $rybColor->blendColors(new RYB(0, 0, 255), $weight); // Blend red and blue in RYB
 ```
 
 Blending colors are done only within RYB color space at the moment. You may convert the color objects to RYB, blend them and then convert the resulting color back to your own color model you using. The weight is a number between 0 and 1 that determines how the colors blend. If weight is 0, the blend will show only the first color. If weight is 1, it will show only the second color. The closer the weight is to 1, the more the blend will favor the second color. This method smooths out the transition between colors, making the blend gradual and more natural-looking.
