@@ -15,17 +15,17 @@ class RYB extends Color {
     protected array $colorWheel = [
     //  [r,   y,   b, angle]
         [255, 0,   0,   0  ],   // 0   Red
-        [255, 0,   128, 30 ],   // 30  Red-Violet
-        [255, 0,   255, 60 ],   // 60  Violet
-        [128, 0,   255, 90 ],   // 90  Blue-Violet
-        [0,   0,   255, 120],   // 120 Blue
-        [0,   128, 255, 150],   // 150 Blue-Green
+        [255, 128, 0,   30 ],   // 30  Red-Orange
+        [128, 255, 0,   60 ],   // 60  Orange
+        [69,  255, 0,   90 ],   // 90  Yellow-Orange
+        [0,   255, 0,   120],   // 120 Yellow
+        [0,   255, 69,  150],   // 150 Yellow-Green
         [0,   255, 255, 180],   // 180 Green
-        [0,   255, 69,  210],   // 210 Yellow-Green
-        [0,   255, 0,   240],   // 240 Yellow
-        [69,  255, 0,   270],   // 270 Yellow-Orange
-        [128, 255, 0,   300],   // 300 Orange
-        [255, 128, 0,   330],   // 330 Red-Orange
+        [0,   128, 255, 210],   // 210 Blue-Green
+        [0,   0,   255, 240],   // 240 Blue
+        [128, 0,   255, 270],   // 270 Blue-Violet
+        [255, 0,   255, 300],   // 300 Violet
+        [255, 0,   128, 330],   // 330 Red-Violet
     ];
 
     function __construct($r, $y, $b)
@@ -122,6 +122,8 @@ class RYB extends Color {
         }
 
         $angle = fmod($this->currentAngle() + $angle, 360);
+        $angle = $angle < 0 ? $angle + 360 : $angle;
+
         [$segmentIndex, $nextSegmentIndex] = $this->getSegments($angle);
         $weight = $this->getWeight($angle, $segmentIndex);
 
@@ -153,7 +155,7 @@ class RYB extends Color {
         return [$segmentIndex, $nextSegmentIndex];
     }
 
-    public function normalizeColor(RYB $color, int $dampingFactor = 1): self
+    public function normalizeColor(RYB $color, float $dampingFactor = 1): self
     {
         list($targetR, $targetY, $targetB) = $color->asArray();
 
