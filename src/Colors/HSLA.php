@@ -60,16 +60,6 @@ class HSLA extends Color {
         return $this->calculateAngle(new HSLA(0, 100, 50, 1));
     }
 
-    public function digitalDistance(Color $color): float
-    {
-        return $this->asLAB()->digitalDistance($color);
-    }
-
-    public function visibleDifference(Color $color): float
-    {
-        return $this->asLAB()->visibleDifference($color);
-    }
-
     public function findColorByAngle(float $angle): self
     {
         return $this->asRYB()->findColorByAngle($angle)->asHSLA($this->alpha);
@@ -85,7 +75,7 @@ class HSLA extends Color {
         return $this->asLAB()->findColorByDistance($distance)->asHSLA($this->alpha);
     }
 
-    public function adjustShade(int $shade): self
+    public function adjustShade(float $shade, $dampingFactor = 1.0): self
     {
         return $this->asLAB()->adjustShade($shade)->asHSLA($this->alpha);
     }
