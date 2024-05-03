@@ -131,7 +131,7 @@ $brighterColor = $rgbColor->adjustShade(150); // 50% brighter than it's current 
 $sameShade - $rgbColor->adjustShade(100); // No change; 100% of it's current shade
 ```
 
-According to LAB color space, all colors can be brighter then they are, even fully saturated yellow (`rgb(255, 255, 0)`). You could adjust the shade of the color (lighten it or darken it) using a percentage relative to the current brightness/shade of the color according to LAB color space.
+All colors can be brighter then they are, even fully saturated yellow (`rgb(255, 255, 0)`). You could adjust the shade of the color (lighten it or darken it) using a percentage relative to the current brightness/shade of the color according to LAB color space.
 
 ### Analyzing Colors
 
