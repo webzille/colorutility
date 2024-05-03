@@ -75,7 +75,7 @@ $labColor = new LAB(53.23288178584245, 80.10930952982204, 67.22006831026425);  /
 
 ### Setting color from string factory
 
-You may set a color object from string from any of the websafe color formats (RGBA, RGB, HSLA, HSL, HEX and named colors) using the `SetCollor::fromString(string $string)` factory.
+You may set a color object from string from any of the websafe color formats (RGBA, RGB, HSLA, HSL, HEX and named colors) using the `SetColor::fromString(string $string)` factory.
 
 ```php
 use Webzille\ColorUtility\SetColor;
