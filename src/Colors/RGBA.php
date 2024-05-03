@@ -16,6 +16,8 @@ class RGBA extends Color {
 
     function __construct($r, $g, $b, $alpha = 1)
     {
+        parent::__construct();
+        
         $this->r = $r;
         $this->g = $g;
         $this->b = $b;
@@ -52,46 +54,6 @@ class RGBA extends Color {
     public function black(): self
     {
         return new RGBA(0, 0, 0, 1);
-    }
-
-    public function calculateAngle(Color $color): float
-    {
-        return $this->asRYB()->calculateAngle($color);
-    }
-
-    public function currentAngle(): float
-    {
-        return $this->calculateAngle(new RGB(255, 0, 0));
-    }
-
-    public function findColorByAngle(float $angle): self
-    {
-        return $this->asRYB()->findColorByAngle($angle)->asRGBA($this->alpha);
-    }
-
-    public function findColorByDistance(float $distance): RGBA
-    {
-        return $this->asLAB()->findColorByDistance($distance)->asRGBA($this->alpha);
-    }
-
-    public function findColorByDifference(float $difference): self
-    {
-        return $this->asLAB()->findColorByDifference($difference)->asRGBA($this->alpha);
-    }
-
-    public function adjustShade(float $shade, float $dampingFactor = 1): self
-    {
-        return $this->asLAB()->adjustShade($shade)->asRGBA($this->alpha);
-    }
-
-    public function linearDeviance(float $percent): self
-    {
-        return $this->asLAB()->linearDeviance($percent)->asRGBA($this->alpha);
-    }
-
-    public function angularDeviance(float $percent): self
-    {
-        return $this->asRYB()->angularDeviance($percent)->asRGBA($this->alpha);
     }
 
     public function getRed(): float
