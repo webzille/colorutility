@@ -81,11 +81,6 @@ class RYB extends Color {
         return sqrt($deltaR ** 2 + $deltaY ** 2 + $deltaB ** 2);
     }
 
-    public function visibleDifference(Color $color): float
-    {
-        return $this->asLAB()->visibleDifference($color);
-    }
-
     public function currentAngle(): float
     {
         $bestDistance = PHP_FLOAT_MAX;
@@ -100,7 +95,7 @@ class RYB extends Color {
                 return $colorData[3];
             }
 
-            for ($angle = $colorData[3]; $angle < $colorData[3] + 30; $angle += 1) {
+            for ($angle = $colorData[3]; $angle < $colorData[3] + 30; $angle++) {
                 $weight = $this->getWeight($angle, $index);
                 $blendedColor = $color1->blendColors($color2, $weight);
                 $distance = $this->normalizeColor($blendedColor)->digitalDistance($this);
@@ -176,9 +171,11 @@ class RYB extends Color {
         return new RYB($newR, $newY, $newB);
     }
 
-    public function blendColors(RYB $color, float $weight): RYB
+    public function blendColors(RYB $color, float $weight, bool $smooth = true): RYB
     {
-        $weight = (1 - cos($weight * M_PI)) / 2;
+        if ($smooth) {
+            $weight = (1 - cos($weight * M_PI)) / 2;
+        }
         
         $red    = $this->r * (1 - $weight) + $color->getRed()    * $weight;
         $yellow = $this->y * (1 - $weight) + $color->getYellow() * $weight;
@@ -202,27 +199,20 @@ class RYB extends Color {
         return $this->asLAB()->findColorByDistance($distance)->asRYB();
     }
 
-    public function adjustShade(int $shade): self
+    public function adjustShade(float $shade, float $dampingFactor = 1.0): self
     {
-        return $this->asLAB()->adjustShade($shade)->asRYB();
+        $mixable = $shade >= 100 ? $this->white() : $this->black();
+        $normalizedShade = $shade >= 100 ? 0.8 - ($shade - 100) / 100 : ($shade / 100);
+        $weight = $shade == 100 ? 1 : 0.4 + (0.5 * $normalizedShade * $dampingFactor);
+
+        return $this->blendColors($mixable, 1 - $weight);
     }
 
     public function linearDeviance(float $percent): self
     {
-        if ($percent === 0) {
-            return clone $this;
-        }
+        $mixable = $this->findColorByAngle(180);
 
-        $adjustedPercent = $percent / 100;
-        $directionR = ($this->r > 127) ? -1 : 1;
-        $directionY = ($this->y > 127) ? -1 : 1;
-        $directionB = ($this->b > 127) ? -1 : 1;
-
-        $newR = max(0, min(255, $this->r + $directionR * $adjustedPercent * (255 - $this->r)));
-        $newY = max(0, min(255, $this->y + $directionY * $adjustedPercent * (255 - $this->y)));
-        $newB = max(0, min(255, $this->b + $directionB * $adjustedPercent * (255 - $this->b)));
-
-        return new RYB($newR, $newY, $newB);
+        return $this->blendColors($mixable, $percent / 100, false);
     }
 
     public function getRed(): string
