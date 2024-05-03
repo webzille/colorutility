@@ -159,6 +159,14 @@ $hslColor = new HSL(195.51382638999, 100, 50);
 echo $hslColor->asLAB()->findColorByAngle(180)->backTo($hslColor)->viewColor();  // hsl(30.533318540464, 70.332302060189%, 63.65760628305%)
 ```
 
+That is good if the color object would be dynamically set and the result needs to be the same as what it was before any conversions took place. Otherwise you could simply chain the proper conversion method to get back to the original color model.
+
+```php
+// Making sure we view the color in HSL format after using the color in LAB color space
+$hslColor = new HSL(195.51382638999, 100, 50);
+echo $hslColor->asLAB()->findColorByAngle(180)->asHSL()->viewColor();  // hsl(30.533318540464, 70.332302060189%, 63.65760628305%)
+```
+
 ### Manipulating Colors
 
 Adjust color properties, blend colors, or calculate color harmonies.
