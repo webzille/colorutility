@@ -27,6 +27,8 @@ class LAB extends Color
 
     public function asString(): string
     {
+        parent::__construct();
+        
         $L = round($this->L);
         $a = round($this->a);
         $b = round($this->b);
@@ -72,11 +74,6 @@ class LAB extends Color
         $newB = $this->a * sin($angleRadians) + $this->b * cos($angleRadians);
 
         return new LAB($this->L, $newA, $newB);
-    }
-
-    public function currentAngle(): float
-    {
-        return $this->calculateAngle(new LAB(53, 80, 67));
     }
 
     public function findColorByDistance(float $distance, float $tolerance = 0.1, int $maxIterations = 10000): self

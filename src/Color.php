@@ -15,6 +15,13 @@ use Webzille\ColorUtility\Colors\RYB;
 
 abstract class Color {
 
+    protected string $colorSpace;
+
+    function __construct()
+    {
+        $this->colorSpace = Colors::$defaultColorSpace;
+    }
+
     function __toString(): string
     {
         return $this->asString();
@@ -80,6 +87,49 @@ abstract class Color {
         return $this;
     }
 
+    public function setSpace(string $space = ''): self
+    {
+        $space = empty($space) && !is_callable($space) ? $this->colorSpace : $space;
+        $space = in_array($space, Colors::$spaces) ? $space : $this->colorSpace;
+
+        $this->colorSpace = $space;
+        return $this;
+    }
+
+    protected function getModels(): array
+    {
+        return [
+                      HSLA::class => [$this, 'asHSLA'],
+                       HSL::class => [$this, 'asHSL'],
+                      RGBA::class => [$this, 'asRGBA'],
+                       RGB::class => [$this, 'asRGB'],
+                       HEX::class => [$this, 'asHEX'],
+                       RYB::class => [$this, 'asRYB'],
+                       HSV::class => [$this, 'asHSV'],
+                       LAB::class => [$this, 'asLAB'],
+            CylindricalLAB::class => [$this, 'asCylindrical']
+        ];
+    }
+
+    private function convert(string $model): self
+    {
+        $models = $this->getModels();
+
+        if (array_key_exists($model, $models)) {
+            return call_user_func($models[$model]);
+        }
+    }
+
+    public function as(string $model = ''): self
+    {
+        return $this->convert($model);
+    }
+
+    public function backTo(Color $to): self
+    {
+        return $this->convert(get_class($to));
+    }
+
     public function viewColor(string $label = null): string
     {
         $isWebSafe = in_array(get_class($this), Colors::$websafe);
@@ -103,19 +153,40 @@ abstract class Color {
         return (new CieDelta)->E2000($this, $color);
     }
 
-    abstract function calculateAngle(Color $angle);
+    public function calculateAngle(Color $color): float
+    {
+        return $this->as($this->colorSpace)->calculateAngle($color);
+    }
 
-    abstract function currentAngle();
+    public function currentAngle(): float
+    {
+        return $this->calculateAngle(new RGB(255, 0, 0));
+    }
 
-    abstract function findColorByDistance(float $distance);
+    public function findColorByDistance(float $distance): self
+    {
+        return $this->asLAB()->findColorByDistance($distance)->backTo($this);
+    }
 
-    abstract function findColorByDifference(float $difference);
+    public function findColorByDifference(float $difference): self
+    {
+        return $this->asLAB()->findColorByDifference($difference)->backTo($this);
+    }
 
-    abstract function findColorByAngle(float $angle);
+    public function findColorByAngle(float $angle): self
+    {
+        return $this->as($this->colorSpace)->findColorByAngle($angle)->backTo($this);
+    }
 
-    abstract function adjustShade(float $shade, float $dampingFactor = 1.0);
+    public function adjustShade(float $shade, float $dampingFactor = 1): self
+    {
+        return $this->as($this->colorSpace)->adjustShade($shade, $dampingFactor)->backTo($this);
+    }
 
-    abstract function linearDeviance(float $percent);
+    public function linearDeviance(float $percent): self
+    {
+        return $this->as($this->colorSpace)->linearDeviance($percent)->backTo($this);
+    }
 
     public function angularDeviance(float $percent): self
     {
@@ -124,7 +195,7 @@ abstract class Color {
         return $this->findColorByAngle(180 * $percent);
     }
 
-    public function complementary(): array
+    public function complementary(): self
     {
         // Rotate the base color by 180 degrees (180°)
         return $this->findColorByAngle(180);

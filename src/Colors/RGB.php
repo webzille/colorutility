@@ -15,6 +15,8 @@ class RGB extends Color
 
     function __construct($r, $g, $b)
     {
+        parent::__construct();
+
         $this->r = $r;
         $this->g = $g;
         $this->b = $b;
@@ -51,21 +53,11 @@ class RGB extends Color
         return new RGB(0, 0, 0);
     }
 
-    public function calculateAngle(Color $color): float
-    {
-        return $this->asRYB()->calculateAngle($color);
-    }
-
-    public function currentAngle(): float
-    {
-        return $this->calculateAngle(new RGB(255, 0, 0));
-    }
-
     public function findColorByDistance(float $distance): RGB
     {
-        return $this->asLAB()->findColorByDistance($distance)->asRGB();
+        return $this->asLAB()->findColorByDistance($distance)->backTo($this);
 
-        $originalColor = $this->asRGB();
+        /* $originalColor = $this->asRGB();
         $tolerance = 0.1;
         $maxIterations = 10000;
 
@@ -86,32 +78,7 @@ class RGB extends Color
             }
         }
 
-        return $originalColor;
-    }
-
-    public function findColorByAngle(float $angle): self
-    {
-        return $this->asRYB()->findColorByAngle($angle)->asRGB();
-    }
-
-    public function findColorByDifference(float $difference): self
-    {
-        return $this->asLAB()->findColorByDifference($difference)->asRGB();
-    }
-
-    public function adjustShade(float $shade, float $dampingFactor = 1): self
-    {
-        return $this->asLAB()->adjustShade($shade, $dampingFactor)->asRGB();
-    }
-
-    public function linearDeviance(float $percent): self
-    {
-        return $this->asLAB()->linearDeviance($percent)->asRGB();
-    }
-
-    public function angularDeviance(float $percent): self
-    {
-        return $this->asRYB()->angularDeviance($percent)->asRGB();
+        return $originalColor; */
     }
 
     public function getRed(): float

@@ -18,6 +18,8 @@ class Colors {
 
     public static string $valuePattern = '/(?:\.\d+|\d+(?:\.\d+)?)/';
 
+    public static string $defaultColorSpace = RYB::class;
+
     public static array $settable = [
         'rgba'  => RGBA::class,
         'rgb'   => RGB::class,
@@ -43,6 +45,12 @@ class Colors {
         HSV::class,
         LAB::class,
         CylindricalLAB::class
+    ];
+
+    public static array $spaces = [
+        RYB::class,
+        LAB::class,
+        HSV::class
     ];
 
     public static array $namedColors = [
