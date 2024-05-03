@@ -43,7 +43,7 @@ $rgbColor = new RGB(255, 128, 69);
 echo $rgbColor->findColorByAngle(180)->viewColor();  // rgb(69, 255, 122)
 ```
 
-You could also simply convert the color object from RGB to one of the color spaces like `RYB::class`, `LAB::class` or `HSV::class` in stead of specifying for a specific color space.
+You could also simply convert the color object from RGB to one of the color spaces like `RYB::class`, `LAB::class` or `HSV::class` instead of specifying for a specific color space.
 
 ```php
 $rgbColor = new RGB(255, 128, 69);
