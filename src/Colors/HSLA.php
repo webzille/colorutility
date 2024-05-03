@@ -67,6 +67,11 @@ class HSLA extends Color {
         return $this->l;
     }
 
+    public function getAlpha(): float
+    {
+        return $this->alpha;
+    }
+
     public function asHEX(): HEX
     {
         return $this->asRGBA()->asHEX();
