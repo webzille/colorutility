@@ -20,7 +20,42 @@ composer require webzille/colorutility
 
 ## Color Space / Wheel
 
-At the moment every websafe color model uses the traditional painter's color wheel where the primary colors are red, yellow and blue (RYB), including HSL. Only HSV, LAB and CylindricalLAB uses their own angle manipulating methods and their own color space.
+This package includes the following color spaces / wheels to be used in scheme creation.
+
+- **RYB Traditional Painter:** This color wheel is based on the traditional painter’s perspective, where the primary colors are red, yellow, and blue. It's used extensively in art and design education, emphasizing how painters mix colors to achieve a broad spectrum. This model is ideal for applications that require a naturalistic approach to color mixing and harmony, as it aligns with traditional artistic techniques.
+- **HSV (Hue, Saturation, Value):** HSV represents colors in terms of their hue, saturation, and value (brightness). Hue is the color type, saturation represents the intensity of the color, and value indicates the brightness. This model is particularly useful for applications needing intuitive color adjustments since it separates color-making components in a way that aligns with human perception of color.
+- **LAB:** LAB color space includes three components - L for lightness, A and B for color spectrums from green to red and blue to yellow, respectively. It is designed to approximate human vision and is not dependent on how colors are created with light or pigments. This model is useful for achieving precise color manipulation and ensuring color consistency across different devices and viewing conditions.
+
+By default the package uses the **RYB Traditional Painter** color wheel for creating color schemes or for any of the color manipulating methods available. It is easy though to change the color wheel from RYB to either **HSV** or to **LAB** by passing the class string name to `setSpace()` method.
+
+```php
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->setSpace(LAB::class)->findColorByAngle(180)->viewColor();  // rgb(0, 189, 255)
+
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->setSpace(HSV::class)->findColorByAngle(180)->viewColor();  // rgb(69, 196, 255)
+
+// The default color space / wheel
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->setSpace(RYB::class)->findColorByAngle(180)->viewColor();  // rgb(69, 255, 122)
+
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->findColorByAngle(180)->viewColor();  // rgb(69, 255, 122)
+```
+
+You could also simply convert the color object from RGB to one of the color spaces like `RYB::class`, `LAB::class` or `HSV::class` in stead of specifying for a specific color space.
+
+``php
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->as(LAB::class)->findColorByAngle(180)->viewColor();
+``
+
+Which is the same as
+
+```php
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->asLAB()->findColorByAngle(180)->viewColor();
+```
 
 ## Usage
 
@@ -110,6 +145,18 @@ Convert colors between different models to fit the context of your application.
 ```php
 $hexColor = $rgbColor->asHEX();
 echo $hexColor; // Outputs HEX code for red
+```
+
+If you ever need to use a different color space which would require you to convert a color from one color model to another and than need the color model converted back to what it was before you converted it, you could chain the `backTo()` method to the end of the method chains.
+
+```php
+// Default websafe color to view is RGB
+$hslColor = new HSL(195.51382638999, 100, 50);
+echo $hslColor->asLAB()->findColorByAngle(180)->viewColor();  // rgb(228, 163, 97)
+
+// Making sure we view the color in HSL format after using the color in LAB color space
+$hslColor = new HSL(195.51382638999, 100, 50);
+echo $hslColor->asLAB()->findColorByAngle(180)->backTo($hslColor)->viewColor();  // hsl(30.533318540464, 70.332302060189%, 63.65760628305%)
 ```
 
 ### Manipulating Colors
