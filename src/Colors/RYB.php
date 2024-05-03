@@ -30,6 +30,8 @@ class RYB extends Color {
 
     function __construct($r, $y, $b)
     {
+        parent::__construct();
+        
         $this->r = $r;
 
         $this->y = $y;
@@ -189,23 +191,13 @@ class RYB extends Color {
         return abs($this->r - $this->y) === 0 && abs($this->y - $this->b) === 0 && abs($this->b - $this->r) === 0;
     }
 
-    public function findColorByDifference(float $difference): self
-    {
-        return $this->asLAB()->findColorByDifference($difference)->asRYB();
-    }
-
-    public function findColorByDistance(float $distance): self
-    {
-        return $this->asLAB()->findColorByDistance($distance)->asRYB();
-    }
-
     public function adjustShade(float $shade, float $dampingFactor = 1.0): self
     {
         $mixable = $shade >= 100 ? $this->white() : $this->black();
         $normalizedShade = $shade >= 100 ? 0.8 - ($shade - 100) / 100 : ($shade / 100);
         $weight = $shade == 100 ? 1 : 0.4 + (0.5 * $normalizedShade * $dampingFactor);
 
-        return $this->blendColors($mixable, 1 - $weight);
+        return $mixable->blendColors($this, $weight);
     }
 
     public function linearDeviance(float $percent): self
