@@ -61,11 +61,6 @@ class RGB extends Color
         return $this->calculateAngle(new RGB(255, 0, 0));
     }
 
-    public function digitalDistance(Color $color): float
-    {
-        return $this->asLAB()->digitalDistance($color);
-    }
-
     public function findColorByDistance(float $distance): RGB
     {
         return $this->asLAB()->findColorByDistance($distance)->asRGB();
@@ -94,11 +89,6 @@ class RGB extends Color
         return $originalColor;
     }
 
-    public function visibleDifference(Color $color): float
-    {
-        return $this->asLAB()->visibleDifference($color);
-    }
-
     public function findColorByAngle(float $angle): self
     {
         return $this->asRYB()->findColorByAngle($angle)->asRGB();
@@ -109,9 +99,9 @@ class RGB extends Color
         return $this->asLAB()->findColorByDifference($difference)->asRGB();
     }
 
-    public function adjustShade(int $shade): self
+    public function adjustShade(float $shade, float $dampingFactor = 1): self
     {
-        return $this->asLAB()->adjustShade($shade)->asRGB();
+        return $this->asLAB()->adjustShade($shade, $dampingFactor)->asRGB();
     }
 
     public function linearDeviance(float $percent): self

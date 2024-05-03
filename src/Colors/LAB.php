@@ -2,7 +2,6 @@
 
 namespace Webzille\ColorUtility\Colors;
 
-use Webzille\ColorUtility\Calculations\CieDelta;
 use Webzille\ColorUtility\Color;
 
 class LAB extends Color
@@ -67,29 +66,20 @@ class LAB extends Color
 
     public function findColorByAngle(float $angle): self
     {
-        $angleRad = deg2rad($angle);
+        $angleRadians = deg2rad($angle);
 
-        $magnitude = sqrt($this->a ** 2 + $this->b ** 2);
-        $currentAngleRad = atan2($this->b, $this->a);
-        $newAngleRad = $currentAngleRad + $angleRad;
-
-        $newA = $magnitude * cos($newAngleRad);
-        $newB = $magnitude * sin($newAngleRad);
+        $newA = $this->a * cos($angleRadians) - $this->b * sin($angleRadians);
+        $newB = $this->a * sin($angleRadians) + $this->b * cos($angleRadians);
 
         return new LAB($this->L, $newA, $newB);
     }
 
-    public function currentAngle()
+    public function currentAngle(): float
     {
         return $this->calculateAngle(new LAB(53, 80, 67));
     }
 
-    public function digitalDistance(Color $color): float
-    {
-        return (new CieDelta)->E76($this, $color->asLAB());
-    }
-
-    public function findColorByDistance(float $distance, float $tolerance = 0.1, int $maxIterations = 10000): LAB
+    public function findColorByDistance(float $distance, float $tolerance = 0.1, int $maxIterations = 10000): self
     {
         list($L1, $a1, $b1) = $this->asArray();
 
@@ -121,11 +111,6 @@ class LAB extends Color
         }
         
         return new LAB($L1, $a1, $b1);
-    }
-
-    public function visibleDifference(Color $color): float
-    {
-        return (new CieDelta)->E2000($this, $color->asLAB());
     }
 
     public function findColorByDifference(float $difference, float $tolerance = 0.1, int $maxIterations = 10000): self
@@ -189,12 +174,12 @@ class LAB extends Color
         $newA = ($positiveA) ? $this->a - $rangeA : $this->a + $rangeA;
         $newB = ($positiveB) ? $this->b - $rangeB : $this->b + $rangeB;
 
-        return new LAB($newL, max(-128, min(127, $newA)), max(-128, min(127, $newB)));
+        return new LAB($this->L, max(-128, min(127, $newA)), max(-128, min(127, $newB)));
     }
 
-    public function adjustShade(int $shade): self
+    public function adjustShade(float $shade, $dampingFactor = 0.2): self
     {
-        $newL = min(100, max(0, $this->L * ($shade / 100)));
+        $newL = min(140, max(0, $this->L * ($shade / 100) * $dampingFactor));
         return new LAB($newL, $this->a, $this->b);
     }
 
@@ -265,14 +250,14 @@ class LAB extends Color
 
     public function asCylindrical(): CylindricalLAB
     {
-        $h = atan2($this->b, $this->a);
-        if ($h < 0) {
-            $h += 2 * M_PI;
+        $hue = atan2($this->b, $this->a);
+        if ($hue < 0) {
+            $hue += 2 * M_PI;
         }
 
-        $c = sqrt($this->a ** 2 + $this->b ** 2);
+        $chroma = sqrt($this->a ** 2 + $this->b ** 2);
 
-        return new CylindricalLAB($this->L, $c, $h);
+        return new CylindricalLAB($this->L, $chroma, $hue);
     }
 
     public function asHSL(): HSL

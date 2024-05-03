@@ -10,7 +10,7 @@ echo "<pre>";
 // The color stops for the RYB color wheel (traditional painter's color wheel)
 $colorWheel = [
     'Red'           => [255, 0,   0  ],
-    'Red-Orange'    => [255, 128, 0  ],
+    'Red-Orange'    => [255, 255, 0  ],
     'Orange'        => [128, 255, 0  ],
     'Yellow-Orange' => [69,  255, 0  ],
     'Yellow'        => [0,   255, 0  ],
@@ -35,8 +35,8 @@ foreach ($colorWheel as $colorName => $color) {
 
 echo "\n\nThe Color wheel\n\n";
 
-$object = $ryb['Red']->asRGB();
-// $object = SetColor::fromString("rgb(244, 82, 255");
+$object = $ryb['Red'];
+// $object = SetColor::fromString("rgb(244, 82, 255)");
 echo $object->viewColor("Original Color");
 $colors = [];
 for ($i=0; $i <= 360; $i++) {
@@ -84,4 +84,49 @@ foreach ($ryb['Red']->splitComplementary() as $key => $scheme) {
 
 echo PHP_EOL;
 
+echo "Monochromatic Shades for red: \n";
+foreach ($ryb['Red']->monochromaticShades() as $key => $shade) {
+    echo $shade->viewColor("$key: ");
+}
+
+echo PHP_EOL;
+
+echo "Monochromatic Tones for red: \n";
+foreach ($ryb['Red']->asRGB()->monochromaticTones() as $key => $tone) {
+    echo $tone->viewColor("$key: ");
+}
+
+echo PHP_EOL;
+
 echo "The angle between orange and green is: " . $ryb['Orange']->calculateAngle($ryb['Green']);
+
+echo PHP_EOL;
+
+echo "\nLinear Deviance in RYB\n";
+for ($i = 0; $i <= 100; $i++) {
+    $newColor = $ryb['Red']->linearDeviance($i);
+    echo "$newColor " . $newColor->viewColor("Deviance at {$i}%:");
+}
+
+echo PHP_EOL;
+
+echo "\nComplementary to Red in RYB color space\n";
+
+$complementaryRYB = $ryb['Red']->findColorByAngle(180);
+echo "$complementaryRYB " . $complementaryRYB->viewColor();
+
+echo PHP_EOL;
+
+$lab = $ryb['Red']->asLAB();
+
+echo "\nLinear Deviance in LAB\n";
+for ($i = 0; $i <= 100; $i++) {
+    $newColor = $lab->linearDeviance($i);
+    echo "$newColor " . $newColor->viewColor("Deviance at {$i}%:");
+}
+
+echo PHP_EOL;
+
+echo "\nComplementary to Red in LAB color space\n";
+$complementaryLab = $lab->findColorByAngle(180);
+echo "$complementaryLab " . $complementaryLab->viewColor();
