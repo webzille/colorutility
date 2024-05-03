@@ -138,35 +138,6 @@ echo $RGBAObject->viewColor();
 
 The method detects if the object is in a websafe color format and converts to RGB in case the color object is not in a websafe color format (like LAB or RYB).
 
-### Converting Colors
-
-Convert colors between different models to fit the context of your application.
-
-```php
-$hexColor = $rgbColor->asHEX();
-echo $hexColor; // Outputs HEX code for red
-```
-
-If you ever need to use a different color space which would require you to convert a color from one color model to another and than need the color model converted back to what it was before you converted it, you could chain the `backTo()` method to the end of the method chains.
-
-```php
-// Default websafe color to view is RGB
-$hslColor = new HSL(195.51382638999, 100, 50);
-echo $hslColor->asLAB()->findColorByAngle(180)->viewColor();  // rgb(228, 163, 97)
-
-// Making sure we view the color in HSL format after using the color in LAB color space
-$hslColor = new HSL(195.51382638999, 100, 50);
-echo $hslColor->asLAB()->findColorByAngle(180)->backTo($hslColor)->viewColor();  // hsl(30.533318540464, 70.332302060189%, 63.65760628305%)
-```
-
-That is good if the color object would be dynamically set and the result needs to be the same as what it was before any conversions took place. Otherwise you could simply chain the proper conversion method to get back to the original color model.
-
-```php
-// Making sure we view the color in HSL format after using the color in LAB color space
-$hslColor = new HSL(195.51382638999, 100, 50);
-echo $hslColor->asLAB()->findColorByAngle(180)->asHSL()->viewColor();  // hsl(30.533318540464, 70.332302060189%, 63.65760628305%)
-```
-
 ### Manipulating Colors
 
 Adjust color properties, blend colors, or calculate color harmonies.
@@ -208,6 +179,35 @@ $triadicScheme = $rgbColor->triadic(); // Returns an array of RGB objects in a t
 ## Color Conversions
 
 The Webzille Color Utility provides extensive support for converting between various color models, allowing seamless transitions across different color formats. This feature is crucial for applications that need to work with multiple color specifications or require specific color manipulations that are easier in certain models.
+
+### Converting Colors
+
+Convert colors between different models to fit the context of your application.
+
+```php
+$hexColor = $rgbColor->asHEX();
+echo $hexColor; // Outputs HEX code for red
+```
+
+If you ever need to use a different color space which would require you to convert a color from one color model to another and than need the color model converted back to what it was before you converted it, you could chain the `backTo()` method to the end of the method chains.
+
+```php
+// Default websafe color to view is RGB
+$hslColor = new HSL(195.51382638999, 100, 50);
+echo $hslColor->asLAB()->findColorByAngle(180)->viewColor();  // rgb(228, 163, 97)
+
+// Making sure we view the color in HSL format after using the color in LAB color space
+$hslColor = new HSL(195.51382638999, 100, 50);
+echo $hslColor->asLAB()->findColorByAngle(180)->backTo($hslColor)->viewColor();  // hsl(30.533318540464, 70.332302060189%, 63.65760628305%)
+```
+
+That is good if the color object would be dynamically set and the result needs to be the same as what it was before any conversions took place. Otherwise you could simply chain the proper conversion method to get back to the original color model.
+
+```php
+// Making sure we view the color in HSL format after using the color in LAB color space
+$hslColor = new HSL(195.51382638999, 100, 50);
+echo $hslColor->asLAB()->findColorByAngle(180)->asHSL()->viewColor();  // hsl(30.533318540464, 70.332302060189%, 63.65760628305%)
+```
 
 ### Conversion Examples
 
