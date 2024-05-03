@@ -25,6 +25,8 @@ class HEX extends Color {
 
     function __construct($HEX)
     {
+        parent::__construct();
+        
         $this->HEX = $HEX;
 
         $this->alpha = 'ff';
@@ -89,46 +91,6 @@ class HEX extends Color {
     public function black(): self
     {
         return new HEX('000000');
-    }
-
-    public function calculateAngle(Color $color): float
-    {
-        return $this->asRYB()->calculateAngle($color->asLAB());
-    }
-
-    public function currentAngle(): float
-    {
-        return $this->calculateAngle(new HEX("ff0000"));
-    }
-
-    public function findColorByAngle(float $angle): self
-    {
-        return $this->asRYB()->findColorByAngle($angle)->asHEX();
-    }
-
-    public function findColorByDifference(float $difference): self
-    {
-        return $this->asLAB()->findColorByDifference($difference)->asHEX();
-    }
-
-    public function findColorByDistance(float $distance): self
-    {
-        return $this->asLAB()->findColorByDistance($distance)->asHEX();
-    }
-
-    public function adjustShade(float $shade, $dampingFactor = 1.0): self
-    {
-        return $this->asLAB()->adjustShade($shade)->asHEX();
-    }
-
-    public function linearDeviance(float $percent): self
-    {
-        return $this->asLAB()->linearDeviance($percent)->asHEX();
-    }
-
-    public function angularDeviance(float $percent): self
-    {
-        return $this->asRYB()->angularDeviance($percent)->asHEX();
     }
 
     public function getHEX(): string
