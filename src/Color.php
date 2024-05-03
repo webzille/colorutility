@@ -2,6 +2,7 @@
 
 namespace Webzille\ColorUtility;
 
+use Webzille\ColorUtility\Calculations\CieDelta;
 use Webzille\ColorUtility\Colors\CylindricalLAB;
 use Webzille\ColorUtility\Colors\HEX;
 use Webzille\ColorUtility\Colors\HSL;
@@ -92,21 +93,27 @@ abstract class Color {
         return "<span style=\"padding-inline: 3rem; background-color: $webSafeColor; color: $fontColor;\">$label</span>\n";
     }
 
+    public function digitalDistance(Color $color): float
+    {
+        return (new CieDelta)->E76($this, $color);
+    }
+
+    public function visibleDifference(Color $color): float
+    {
+        return (new CieDelta)->E2000($this, $color);
+    }
+
     abstract function calculateAngle(Color $angle);
 
     abstract function currentAngle();
 
-    abstract function digitalDistance(Color $color);
-
     abstract function findColorByDistance(float $distance);
-
-    abstract function visibleDifference(Color $color);
 
     abstract function findColorByDifference(float $difference);
 
     abstract function findColorByAngle(float $angle);
 
-    abstract function adjustShade(int $shade);
+    abstract function adjustShade(float $shade, float $dampingFactor = 1.0);
 
     abstract function linearDeviance(float $percent);
 
@@ -177,7 +184,7 @@ abstract class Color {
         // Generate shades of the base color by adjusting the lightness
         $monochromaticShades = [];
 
-        for($shade = 0; $shade <= 100; $shade += 5) {
+        for($shade = 0; $shade <= 200; $shade += 10) {
             $monochromaticShades[$shade] = $this->adjustShade($shade);
         }
 
