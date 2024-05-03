@@ -2,6 +2,9 @@
 
 require 'vendor/autoload.php';
 
+use Webzille\ColorUtility\Colors\HSV;
+use Webzille\ColorUtility\Colors\LAB;
+use Webzille\ColorUtility\Colors\RGB;
 use Webzille\ColorUtility\Colors\RYB;
 use Webzille\ColorUtility\SetColor;
 
@@ -36,7 +39,7 @@ foreach ($colorWheel as $colorName => $color) {
 echo "\n\nThe Color wheel\n\n";
 
 $object = $ryb['Red'];
-// $object = SetColor::fromString("rgb(244, 82, 255)");
+// $object = SetColor::fromString("rgb(255, 0, 0)")->setSpace(LAB::class);
 echo $object->viewColor("Original Color");
 $colors = [];
 for ($i=0; $i <= 360; $i++) {
