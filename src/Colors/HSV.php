@@ -47,16 +47,6 @@ class HSV extends Color
         return new HSV(0, 0, 0);
     }
 
-    public function digitalDistance(Color $color): float
-    {
-        return $this->asLAB()->digitalDistance($color);
-    }
-
-    public function visibleDifference(Color $color): float
-    {
-        return $this->asLab()->visibleDifference($color);
-    }
-
     public function calculateAngle(Color $color): float
     {
         $color = $color->asHSV();
@@ -97,7 +87,7 @@ class HSV extends Color
         return $this->asLAB()->findColorByDistance($distance)->asHSV();
     }
 
-    public function adjustShade(int $shade): self
+    public function adjustShade(float $shade, $dampingFactor = 1.0): self
     {
         return $this->asLAB()->adjustShade($shade)->asHSV();
     }
