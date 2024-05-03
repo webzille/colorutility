@@ -16,6 +16,8 @@ class HSLA extends Color {
 
     function __construct(float $h, float $s, float $l, float $alpha = 1)
     {
+        parent::__construct();
+        
         $this->h = $h;
 
         $this->s = $s;
@@ -48,46 +50,6 @@ class HSLA extends Color {
     public function black(): self
     {
         return new HSLA(0, 0, 0, 1);
-    }
-
-    public function calculateAngle(Color $color): float
-    {
-        return $this->asRYB()->calculateAngle($color);
-    }
-
-    public function currentAngle(): float
-    {
-        return $this->calculateAngle(new HSLA(0, 100, 50, 1));
-    }
-
-    public function findColorByAngle(float $angle): self
-    {
-        return $this->asRYB()->findColorByAngle($angle)->asHSLA($this->alpha);
-    }
-
-    public function findColorByDifference(float $difference): self
-    {
-        return $this->asLAB()->findColorByDifference($difference)->asHSLA($this->alpha);
-    }
-
-    public function findColorByDistance(float $distance): self
-    {
-        return $this->asLAB()->findColorByDistance($distance)->asHSLA($this->alpha);
-    }
-
-    public function adjustShade(float $shade, $dampingFactor = 1.0): self
-    {
-        return $this->asLAB()->adjustShade($shade)->asHSLA($this->alpha);
-    }
-
-    public function linearDeviance(float $percent): self
-    {
-        return $this->asLAB()->linearDeviance($percent)->asHSLA($this->alpha);
-    }
-
-    public function angularDeviance(float $percent): self
-    {
-        return $this->asRYB()->angularDeviance($percent)->asHSLA($this->alpha);
     }
 
     public function getHue(): float
