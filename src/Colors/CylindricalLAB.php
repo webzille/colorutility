@@ -14,6 +14,8 @@ class CylindricalLAB extends Color
 
     public function __construct(float $L, float $c, float $h)
     {
+        parent::__construct();
+        
         $this->L = $L;
         $this->c = $c;
         $this->h = $h;
