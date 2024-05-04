@@ -87,6 +87,11 @@ abstract class Color {
         return $this;
     }
 
+    public function getAlpha(): float|string
+    {
+        return 1.0;
+    }
+
     public function setSpace(string $space = ''): self
     {
         $space = empty($space) && !is_callable($space) ? $this->colorSpace : $space;
@@ -111,12 +116,12 @@ abstract class Color {
         ];
     }
 
-    private function convert(string $model): self
+    private function convert(string $model, float|string $alpha = 1.0): self
     {
         $models = $this->getModels();
 
         if (array_key_exists($model, $models)) {
-            return call_user_func($models[$model]);
+            return call_user_func($models[$model], $alpha);
         }
     }
 
@@ -127,17 +132,15 @@ abstract class Color {
 
     public function backTo(Color $to): self
     {
-        return $this->convert(get_class($to));
+        $alpha = $to->getAlpha() ?? null;
+        return $this->convert(get_class($to), $alpha);
     }
 
     public function viewColor(string $label = null): string
     {
         $isWebSafe = in_array(get_class($this), Colors::$websafe);
-
         $webSafeColor = $isWebSafe ? $this : $this->asRGB();
-
         $fontColor = $webSafeColor->isLight() ? $webSafeColor->black() : $webSafeColor->white();
-
         $label = trim("$label $webSafeColor");
 
         return "<span style=\"padding-inline: 3rem; background-color: $webSafeColor; color: $fontColor;\">$label</span>\n";
