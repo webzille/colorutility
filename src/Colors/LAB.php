@@ -174,7 +174,7 @@ class LAB extends Color
         return new LAB($this->L, max(-128, min(127, $newA)), max(-128, min(127, $newB)));
     }
 
-    public function adjustShade(float $shade, $dampingFactor = 0.2): self
+    public function adjustShade(float $shade, float $dampingFactor = 1.0): self
     {
         $newL = min(140, max(0, $this->L * ($shade / 100) * $dampingFactor));
         return new LAB($newL, $this->a, $this->b);
