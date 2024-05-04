@@ -195,22 +195,22 @@ abstract class Color {
     {
         $percent = ($percent > 200) ? ($percent - 200) / 100 : $percent / 100;
 
-        return $this->findColorByAngle(180 * $percent);
+        return $this->as($this->colorSpace)->findColorByAngle(180 * $percent);
     }
 
     public function complementary(): self
     {
         // Rotate the base color by 180 degrees (180°)
-        return $this->findColorByAngle(180);
+        return $this->as($this->colorSpace)->findColorByAngle(180);
     }
 
     public function tetradic(): array
     {
         // Rotate the base color by 90 degrees (90°) for one color and 270 degrees (270°) for another
         return [
-            $this->findColorByAngle(90),
-            $this->findColorByAngle(180),
-            $this->findColorByAngle(270)
+            $this->as($this->colorSpace)->findColorByAngle(90),
+            $this->as($this->colorSpace)->findColorByAngle(180),
+            $this->as($this->colorSpace)->findColorByAngle(270)
         ];
     }
 
@@ -218,8 +218,8 @@ abstract class Color {
     {
         // Rotate the base color by 150 degrees (150°) and 210 degrees (210°)
         return [
-            $this->findColorByAngle(150),
-            $this->findColorByAngle(210)
+            $this->as($this->colorSpace)->findColorByAngle(150),
+            $this->as($this->colorSpace)->findColorByAngle(210)
         ];
     }
 
@@ -227,8 +227,8 @@ abstract class Color {
     {
         // Rotate the base color by 120 degrees (120°) and 240 degrees (240°)
         return [
-            $this->findColorByAngle(120),
-            $this->findColorByAngle(240)
+            $this->as($this->colorSpace)->findColorByAngle(120),
+            $this->as($this->colorSpace)->findColorByAngle(240)
         ];
     }
 
@@ -236,8 +236,8 @@ abstract class Color {
     {
         // Rotate the base color by 30 degrees (30°) in both directions
         return [
-            $this->findColorByAngle(30),
-            $this->findColorByAngle(-30)
+            $this->as($this->colorSpace)->findColorByAngle(30),
+            $this->as($this->colorSpace)->findColorByAngle(-30)
         ];
     }
 
@@ -247,7 +247,7 @@ abstract class Color {
         $monochromaticTones = [];
 
         for($tone = -25; $tone <= 25; $tone += 5) {
-            $monochromaticTones[$tone] = $this->findColorByAngle($tone);
+            $monochromaticTones[$tone] = $this->as($this->colorSpace)->findColorByAngle($tone);
         }
 
         return $monochromaticTones;
@@ -259,7 +259,7 @@ abstract class Color {
         $monochromaticShades = [];
 
         for($shade = 0; $shade <= 200; $shade += 10) {
-            $monochromaticShades[$shade] = $this->adjustShade($shade);
+            $monochromaticShades[$shade] = $this->as($this->colorSpace)->adjustShade($shade);
         }
 
         return $monochromaticShades;
