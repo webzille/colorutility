@@ -116,7 +116,7 @@ abstract class Color {
         ];
     }
 
-    private function convert(string $model, float $alpha = 1.0): self
+    private function convert(string $model, float|string $alpha = 1.0): self
     {
         $models = $this->getModels();
 
