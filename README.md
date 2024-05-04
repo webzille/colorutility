@@ -26,37 +26,6 @@ This package includes the following color spaces / wheels to be used in scheme c
 - **HSV (Hue, Saturation, Value):** HSV represents colors in terms of their hue, saturation, and value (brightness). Hue is the color type, saturation represents the intensity of the color, and value indicates the brightness. This model is particularly useful for applications needing intuitive color adjustments since it separates color-making components in a way that aligns with human perception of color.
 - **LAB:** LAB color space includes three components - L for lightness, A and B for color spectrums from green to red and blue to yellow, respectively. It is designed to approximate human vision and is not dependent on how colors are created with light or pigments. This model is useful for achieving precise color manipulation and ensuring color consistency across different devices and viewing conditions.
 
-By default the package uses the **RYB Traditional Painter** color wheel for creating color schemes or for any of the color manipulating methods available. It is easy though to change the color wheel from RYB to either **HSV** or to **LAB** by passing the class string name to `setSpace()` method.
-
-```php
-$rgbColor = new RGB(255, 128, 69);
-echo $rgbColor->setSpace(LAB::class)->findColorByAngle(180)->viewColor();  // rgb(0, 189, 255)
-
-$rgbColor = new RGB(255, 128, 69);
-echo $rgbColor->setSpace(HSV::class)->findColorByAngle(180)->viewColor();  // rgb(69, 196, 255)
-
-// The default color space / wheel
-$rgbColor = new RGB(255, 128, 69);
-echo $rgbColor->setSpace(RYB::class)->findColorByAngle(180)->viewColor();  // rgb(69, 255, 122)
-
-$rgbColor = new RGB(255, 128, 69);
-echo $rgbColor->findColorByAngle(180)->viewColor();  // rgb(69, 255, 122)
-```
-
-You could also simply convert the color object from RGB to one of the color spaces like `RYB::class`, `LAB::class` or `HSV::class` instead of specifying for a specific color space.
-
-```php
-$rgbColor = new RGB(255, 128, 69);
-echo $rgbColor->as(LAB::class)->findColorByAngle(180)->viewColor();
-```
-
-Which is the same as
-
-```php
-$rgbColor = new RGB(255, 128, 69);
-echo $rgbColor->asLAB()->findColorByAngle(180)->viewColor();
-```
-
 ## Usage
 
 ### Basic Usage
@@ -97,6 +66,39 @@ $HSLObject = SetColor::fromString($HSLString);
 
 $NamedString = "steelblue";
 $NamedObject = SetColor::fromString($NamedString);
+```
+
+### Going between color spaces / wheels
+
+By default the package uses the **RYB Traditional Painter** color wheel for creating color schemes or for any of the color manipulating methods available. It is easy though to change the color wheel from RYB to either **HSV** or to **LAB** by passing the class string name to `setSpace()` method.
+
+```php
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->setSpace(LAB::class)->findColorByAngle(180)->viewColor();  // rgb(0, 189, 255)
+
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->setSpace(HSV::class)->findColorByAngle(180)->viewColor();  // rgb(69, 196, 255)
+
+// The default color space / wheel
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->setSpace(RYB::class)->findColorByAngle(180)->viewColor();  // rgb(69, 255, 122)
+
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->findColorByAngle(180)->viewColor();  // rgb(69, 255, 122)
+```
+
+You could also simply convert the color object from RGB to one of the color spaces like `RYB::class`, `LAB::class` or `HSV::class` instead of specifying for a specific color space.
+
+```php
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->as(LAB::class)->findColorByAngle(180)->viewColor();
+```
+
+Which is the same as
+
+```php
+$rgbColor = new RGB(255, 128, 69);
+echo $rgbColor->asLAB()->findColorByAngle(180)->viewColor();
 ```
 
 ### Catching colors from string
