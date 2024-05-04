@@ -101,6 +101,23 @@ $rgbColor = new RGB(255, 128, 69);
 echo $rgbColor->asLAB()->findColorByAngle(180)->viewColor();
 ```
 
+If the color model you are working with has it's own methods for `findColorByAngle()` and the like, it will use it's own such methods instead of what `$this->colorSpace` is set to. For instance:
+
+```php
+$labColor = new LAB(53, 80, 67);
+echo $labColor->setSpace(RYB::class)->findColorByAngle(180);  // LAB(53, -80, -67) // Light-blue
+```
+
+In the above example, even though I set the color space to be used to be in `RYB::class`, since LAB color model has that method of it's own it will use it, resulting in it using it's own color space. To manipulate colors in LAB while utilizing RYB color space, you would need to explicitly convert between the methods
+
+```php
+$labColor = new LAB(53, 80, 67);
+echo $labColor->asRYB()->findColorByAngle(180)->backTo($labColor);  // LAB(87, -86, 83) // Green
+// or
+
+echo $labColor->asRYB()->findColorByAngle(180)->asLAB();  // LAB(87, -86, 83) // Green
+```
+
 ### Catching colors from string
 
 You can catch color from strings for whatever parsing you need.
