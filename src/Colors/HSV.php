@@ -119,9 +119,9 @@ class HSV extends Color
         return $this->v;
     }
 
-    public function asHEX(): HEX
+    public function asHEX($alpha = ''): HEX
     {
-        return $this->asRGB()->asHEX();
+        return $this->asRGB()->asHEX($alpha);
     }
 
     public function asLAB(): LAB
