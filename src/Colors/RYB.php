@@ -289,8 +289,8 @@ class RYB extends Color {
         return $this->asRGB()->asHSV();
     }
 
-    public function asHEX(): HEX
+    public function asHEX($alpha = ''): HEX
     {
-        return $this->asRGB()->asHEX();
+        return $this->asRGB()->asHEX($alpha);
     }
 }
