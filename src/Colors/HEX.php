@@ -29,7 +29,7 @@ class HEX extends Color {
         
         $this->HEX = $HEX;
 
-        $this->alpha = 'ff';
+        $this->alpha = '';
 
         switch (strlen($HEX)) {
             case 2:
@@ -80,7 +80,7 @@ class HEX extends Color {
 
     public function isLight(): bool
     {
-        return $this->asRGBA()->isLight();
+        return $this->asRGB()->isLight();
     }
 
     public function white(): self
@@ -127,14 +127,17 @@ class HEX extends Color {
         return new RGB($r, $g, $b);
     }
 
-    public function asRGBA(float $alpha = null): RGBA
+    public function asRGBA(float|string $alpha = ''): RGBA
     {
+        $this->alpha = $this->alpha === '' ? 'ff' : $this->alpha;
+        $alpha = $alpha === '' ? $this->alpha : $alpha;
+        $alpha = is_string($alpha) ? hexdec($alpha) / 255 : $alpha;
+
         $r = hexdec($this->r);
         $g = hexdec($this->g);
         $b = hexdec($this->b);
-        $a = ($alpha === null) ? hexdec($this->alpha) / 255 : $alpha;
 
-        return new RGBA($r, $g, $b, $a);
+        return new RGBA($r, $g, $b, $alpha);
     }
 
     public function asLAB(): LAB
@@ -152,11 +155,11 @@ class HEX extends Color {
         return $this->asRGB()->asHSL();
     }
 
-    public function asHSLA(float $alpha = null): HSLA
+    public function asHSLA(float|string $alpha = ''): HSLA
     {
-        if ($alpha === null) {
-            $alpha = ($this->alpha === '') ? 1 : hexdec($this->alpha) / 255;
-        }
+        $this->alpha = $this->alpha === '' ? 'ff' : $this->alpha;
+        $alpha = $alpha === '' ? $this->alpha : $alpha;
+        $alpha = is_string($alpha) ? hexdec($alpha) / 255 : $alpha;
 
         return $this->asRGB()->asHSLA($alpha);
     }

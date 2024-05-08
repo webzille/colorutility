@@ -57,7 +57,7 @@ abstract class Color {
         return $this;
     }
 
-    public function asHEX(): HEX
+    public function asHEX(string $alpha = ''): HEX
     {
         return $this;
     }
@@ -134,6 +134,11 @@ abstract class Color {
     {
         $alpha = $to->getAlpha() ?? null;
         return $this->convert(get_class($to), $alpha);
+    }
+
+    public function back(): self
+    {
+        return $this->backTo($this);
     }
 
     public function viewColor(string $label = null): string

@@ -240,9 +240,9 @@ class LAB extends Color
         return $this->asRGB()->asRGBA($alpha);
     }
 
-    public function asHEX(): HEX
+    public function asHEX($alpha = ''): HEX
     {
-        return $this->asRGB()->asHEX();
+        return $this->asRGB()->asHEX($alpha);
     }
 
     public function asCylindrical(): CylindricalLAB

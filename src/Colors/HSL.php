@@ -64,9 +64,9 @@ class HSL extends Color
         return $this->l;
     }
 
-    public function asHEX(): HEX
+    public function asHEX(string $alpha = ''): HEX
     {
-        return $this->asRGB()->asHEX();
+        return $this->asRGB()->asHEX($alpha);
     }
 
     public function asLAB(): LAB
