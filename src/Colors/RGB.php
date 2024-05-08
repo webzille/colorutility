@@ -96,13 +96,14 @@ class RGB extends Color
         return $this->b;
     }
 
-    public function asHEX(): HEX
+    public function asHEX($alpha = ''): HEX
     {
+        $alpha = ($alpha !== '' && $alpha <= 1.0) ? str_pad(dechex(max(0, min(255, round($alpha * 255)))), 2, '0', STR_PAD_LEFT) : $alpha;
         $r = str_pad(dechex((int) $this->r), 2, '0', STR_PAD_LEFT);
         $g = str_pad(dechex((int) $this->g), 2, '0', STR_PAD_LEFT);
         $b = str_pad(dechex((int) $this->b), 2, '0', STR_PAD_LEFT);
-
-        return new HEX($r . $g . $b);
+        
+        return new HEX($r . $g . $b . $alpha);
     }
 
     public function asLAB(): LAB
