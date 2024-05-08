@@ -4,276 +4,275 @@ namespace Webzille\ColorUtility\Colors;
 
 use Webzille\ColorUtility\Color;
 
-class LAB extends Color
+class RGB extends Color
 {
 
-    private float $L;
+    private float $r;
 
-    private float $a;
+    private float $g;
 
     private float $b;
 
-    function __construct($L, $a, $b)
+    function __construct($r, $g, $b)
     {
-        $this->L = $L;
-        $this->a = $a;
+        parent::__construct();
+
+        $this->r = $r;
+        $this->g = $g;
         $this->b = $b;
     }
 
     public function asArray(): array
     {
-        return [$this->L, $this->a, $this->b];
+        return [$this->r, $this->g, $this->b];
     }
 
     public function asString(): string
     {
-        parent::__construct();
-        
-        $L = round($this->L);
-        $a = round($this->a);
-        $b = round($this->b);
+        $r = min(255, max(0, abs(round($this->r))));
+        $g = min(255, max(0, abs(round($this->g))));
+        $b = min(255, max(0, abs(round($this->b))));
 
-        return "LAB({$L}, {$a}, {$b})";
+        return "rgb($r, $g, $b)";
     }
 
     public function isLight(): bool
     {
-        return $this->L > 50;
+        $brightness = ($this->r * 0.2126) + ($this->g * 0.7152) + ($this->b * 0.0722);
+
+        return $brightness > 128;
     }
 
     public function white(): self
     {
-        return new LAB(100, 0, 0);
+        return new RGB(255, 255, 255);
     }
 
     public function black(): self
     {
-        return new LAB(0, 0, 0);
+        return new RGB(0, 0, 0);
     }
 
-    public function calculateAngle(Color $color): float
+    public function findColorByDistance(float $distance): RGB
     {
-        list($L1, $a1, $b1) = $this->asArray();
-        list($L2, $a2, $b2) = $color->asLAB()->asArray();
+        return $this->asLAB()->findColorByDistance($distance)->backTo($this);
 
-        $dotProduct = $a1 * $a2 + $b1 * $b2 + $L1 * $L2;
-
-        $magnitude1 = sqrt($a1 ** 2 + $b1 ** 2 + $L1 ** 2);
-        $magnitude2 = sqrt($a2 ** 2 + $b2 ** 2 + $L2 ** 2);
-
-        $angleRadians = acos($dotProduct / ($magnitude1 * $magnitude2));
-
-        return rad2deg($angleRadians);
-    }
-
-    public function findColorByAngle(float $angle): self
-    {
-        $angleRadians = deg2rad($angle);
-
-        $newA = $this->a * cos($angleRadians) - $this->b * sin($angleRadians);
-        $newB = $this->a * sin($angleRadians) + $this->b * cos($angleRadians);
-
-        return new LAB($this->L, $newA, $newB);
-    }
-
-    public function findColorByDistance(float $distance, float $tolerance = 0.1, int $maxIterations = 10000): self
-    {
-        list($L1, $a1, $b1) = $this->asArray();
-
-        $minScale = 0.1;
+        /* $originalColor = $this->asRGB();
+        $tolerance = 0.1;
+        $maxIterations = 10000;
 
         for ($i = 0; $i < $maxIterations; $i++) {
-            $adjustment = [
-                'L' => mt_rand(-100, 100) / 100,
-                'a' => mt_rand(-100, 100) / 100,
-                'b' => mt_rand(-100, 100) / 100,
-            ];
+            $rAdjustment = rand(-$distance, $distance);
+            $gAdjustment = rand(-$distance, $distance);
+            $bAdjustment = rand(-$distance, $distance);
 
-            $newL = max(0, min(100, $L1 + $adjustment['L']));
-            $newA = max(-128, min(127, $a1 + $adjustment['a']));
-            $newB = max(-128, min(127, $b1 + $adjustment['b']));
+            $newR = max(0, min(255, $originalColor->r + $rAdjustment));
+            $newG = max(0, min(255, $originalColor->g + $gAdjustment));
+            $newB = max(0, min(255, $originalColor->b + $bAdjustment));
 
-            $newColor = new LAB($newL, $newA, $newB);
-            $newDistance = $this->digitalDistance($newColor);
-            $distanceDiff = abs($newDistance - $distance);
-            $scaleFactor = $minScale + ($distance - $minScale) * ($distanceDiff / $distance);
+            $newColor = new RGB($newR, $newG, $newB);
+            $newDistance = $originalColor->digitalDistance($newColor);
 
-            if ($distanceDiff <= $tolerance) {
+            if (abs($newDistance - $distance) <= $tolerance) {
                 return $newColor;
             }
-
-            $L1 = max(0, min(100, $L1 + $adjustment['L'] * $scaleFactor));
-            $a1 = max(-128, min(127, $a1 + $adjustment['a'] * $scaleFactor));
-            $b1 = max(-128, min(127, $b1 + $adjustment['b'] * $scaleFactor));
-        }
-        
-        return new LAB($L1, $a1, $b1);
-    }
-
-    public function findColorByDifference(float $difference, float $tolerance = 0.1, int $maxIterations = 10000): self
-    {
-        list($L1, $a1, $b1) = $this->asArray();
-
-        $minScale = 0.1;
-
-        $difference = ($difference > 100) ? $difference - 100 : $difference;
-
-        for ($i = 0; $i < $maxIterations; $i++) {
-            $adjustment = [
-                'L' => mt_rand(-100, 100) / 100,
-                'a' => mt_rand(-100, 100) / 100,
-                'b' => mt_rand(-100, 100) / 100,
-            ];
-
-            $newL = max(0, min(100, $L1 + $adjustment['L']));
-            $newA = max(-128, min(127, $a1 + $adjustment['a']));
-            $newB = max(-128, min(127, $b1 + $adjustment['b']));
-
-            $newColor = new LAB($newL, $newA, $newB);
-            $newDistance = $this->visibleDifference($newColor);
-
-            $distanceDiff = abs($newDistance - $difference);
-
-            $scaleFactor = $minScale + ($difference - $minScale) * ($distanceDiff / $difference);
-
-            if ($distanceDiff <= $tolerance) {
-                return $newColor;
-            }
-
-            $L1 = max(0, min(100, $L1 + $adjustment['L'] * $scaleFactor));
-            $a1 = max(-128, min(127, $a1 + $adjustment['a'] * $scaleFactor));
-            $b1 = max(-128, min(127, $b1 + $adjustment['b'] * $scaleFactor));
-        }
-        
-        return new LAB($L1, $a1, $b1);
-    }
-
-    public function linearDeviance(float $percent): self
-    {
-        if ($percent === 0) {
-            return clone $this;
         }
 
-        $percent = ($percent > 100) ? $percent - 100 : $percent;
-
-        $lightnessScale = 0.6667;
-        $positiveA = $this->a >= 0;
-        $positiveB = $this->b >= 0;
-        $adjustedPercent = $percent / 100;
-
-        $coefficientA = ($positiveA) ? 128 : 127;
-        $coefficientB = ($positiveB) ? 128 : 127;
-
-        $newL = max($this->L, min(100, $this->L * $lightnessScale + $percent * $lightnessScale));
-        $rangeA = ((abs($this->a) + $coefficientA) * $adjustedPercent);
-        $rangeB = ((abs($this->b) + $coefficientB) * $adjustedPercent);
-
-        $newA = ($positiveA) ? $this->a - $rangeA : $this->a + $rangeA;
-        $newB = ($positiveB) ? $this->b - $rangeB : $this->b + $rangeB;
-
-        return new LAB($this->L, max(-128, min(127, $newA)), max(-128, min(127, $newB)));
+        return $originalColor; */
     }
 
-    public function adjustShade(float $shade, float $dampingFactor = 1.0): self
+    public function getRed(): float
     {
-        $newL = min(140, max(0, $this->L * ($shade / 100) * $dampingFactor));
-        return new LAB($newL, $this->a, $this->b);
+        return $this->r;
     }
 
-    public function getLightness(): float
+    public function getGreen(): float
     {
-        return $this->L;
+        return $this->g;
     }
 
-    public function getA(): float
-    {
-        return $this->a;
-    }
-
-    public function getB(): float
+    public function getBlue(): float
     {
         return $this->b;
     }
 
-    public function asRGB(): RGB
+    public function asHEX($alpha = ''): HEX
+    {
+        $alpha = ($alpha !== '' && $alpha <= 1.0) ? str_pad(dechex(max(0, min(255, round($alpha * 255)))), 2, '0', STR_PAD_LEFT) : $alpha;
+        $r = str_pad(dechex((int) $this->r), 2, '0', STR_PAD_LEFT);
+        $g = str_pad(dechex((int) $this->g), 2, '0', STR_PAD_LEFT);
+        $b = str_pad(dechex((int) $this->b), 2, '0', STR_PAD_LEFT);
+        
+        return new HEX($r . $g . $b . $alpha);
+    }
+
+    public function asLAB(): LAB
     {
         list($x, $y, $z) = $this->asXYZ();
 
-        $r = $x *  3.2406 + $y * -1.5372 + $z * -0.4986;
-        $g = $x * -0.9689 + $y *  1.8758 + $z *  0.0415;
-        $b = $x *  0.0557 + $y * -0.2040 + $z *  1.0570;
+        $fx = $x > 0.008856 ? pow($x, 1 / 3) : (7.787 * $x) + (16 / 116);
+        $fy = $y > 0.008856 ? pow($y, 1 / 3) : (7.787 * $y) + (16 / 116);
+        $fz = $z > 0.008856 ? pow($z, 1 / 3) : (7.787 * $z) + (16 / 116);
 
-        $r = ($r > 0.0031308) ? ((1.055 * ($r ** (1 / 2.4))) - 0.055) : ($r * 12.92);
-        $g = ($g > 0.0031308) ? ((1.055 * ($g ** (1 / 2.4))) - 0.055) : ($g * 12.92);
-        $b = ($b > 0.0031308) ? ((1.055 * ($b ** (1 / 2.4))) - 0.055) : ($b * 12.92);
+        $l = (116 * $fy) - 16;
+        $a = 500 * ($fx - $fy);
+        $b = 200 * ($fy - $fz);
 
-        return new RGB(
-            (max(0, min(255, $r * 255)) * 100) / 100,
-            (max(0, min(255, $g * 255)) * 100) / 100,
-            (max(0, min(255, $b * 255)) * 100) / 100
+        return new LAB(
+            round($l, 2),
+            round($a, 2),
+            round($b, 2)
         );
     }
 
     public function asXYZ(): array
     {
-        $y = ($this->L + 16) / 116;
-        $x = $this->a / 500 + $y;
-        $z = $y - $this->b / 200;
+        $r = $this->r / 255;
+        $g = $this->g / 255;
+        $b = $this->b / 255;
 
-        $x3 = $x ** 3;
-        $y3 = $y ** 3;
-        $z3 = $z ** 3;
+        $r = $r > 0.04045 ? pow(($r + 0.055) / 1.055, 2.4) : $r / 12.92;
+        $g = $g > 0.04045 ? pow(($g + 0.055) / 1.055, 2.4) : $g / 12.92;
+        $b = $b > 0.04045 ? pow(($b + 0.055) / 1.055, 2.4) : $b / 12.92;
 
-        $x = ($x3 > 0.008856) ? $x3 : ($x - 16 / 116) / 7.787;
-        $y = ($y3 > 0.008856) ? $y3 : ($y - 16 / 116) / 7.787;
-        $z = ($z3 > 0.008856) ? $z3 : ($z - 16 / 116) / 7.787;
+        $x = $r * 0.4124564 + $g * 0.3575761 + $b * 0.1804375;
+        $y = $r * 0.2126729 + $g * 0.7151522 + $b * 0.0721750;
+        $z = $r * 0.0193339 + $g * 0.1191920 + $b * 0.9503041;
 
-        $x *= 0.95047;
-        $y *= 1.00000;
-        $z *= 1.08883;
+        $x /= 0.95047;
+        $y /= 1.00000;
+        $z /= 1.08883;
 
         return [$x, $y, $z];
     }
 
-    public function asRGBA(float $alpha = 1): RGBA
-    {
-        return $this->asRGB()->asRGBA($alpha);
-    }
-
-    public function asHEX($alpha = ''): HEX
-    {
-        return $this->asRGB()->asHEX($alpha);
-    }
-
     public function asCylindrical(): CylindricalLAB
     {
-        $hue = atan2($this->b, $this->a);
-        if ($hue < 0) {
-            $hue += 2 * M_PI;
-        }
+        return $this->asLAB()->asCylindrical();
+    }
 
-        $chroma = sqrt($this->a ** 2 + $this->b ** 2);
-
-        return new CylindricalLAB($this->L, $chroma, $hue);
+    public function asRGBA(float $alpha = 1): RGBA
+    {
+        return new RGBA($this->r, $this->g, $this->b, $alpha);
     }
 
     public function asHSL(): HSL
     {
-        return $this->asRGB()->asHSL();
+        list($r,$g, $b) = $this->asArray();
+
+        $r /= 255;
+        $g /= 255;
+        $b /= 255;
+
+        $max = max($r, $g, $b);
+        $min = min($r, $g, $b);
+
+        $h = 0;
+        $s = 0;
+        $l = ($max + $min) / 2;
+
+        if ($max != $min) {
+            $d = $max - $min;
+            $s = $l > 0.5 ? $d / (2 - $max - $min) : $d / ($max + $min);
+
+            switch ($max) {
+                case $r:
+                    $h = ($g - $b) / $d + ($g < $b ? 6 : 0);
+                    break;
+                case $g:
+                    $h = ($b - $r) / $d + 2;
+                    break;
+                case $b:
+                    $h = ($r - $g) / $d + 4;
+                    break;
+            }
+
+            $h *= 60;
+        }
+
+        $s *= 100;
+        $l *= 100;
+
+        return new HSL($h, $s, $l);
     }
 
     public function asHSLA(float $alpha = 1): HSLA
     {
-        return $this->asRGB()->asHSLA($alpha);
+        return $this->asHSL()->asHSLA($alpha);
     }
 
     public function asHSV(): HSV
     {
-        return $this->asRGB()->asHSV();
+        $r = $this->r / 255;
+        $g = $this->g / 255;
+        $b = $this->b / 255;
+
+        $max = max($r, $g, $b);
+        $min = min($r, $g, $b);
+
+        $v = $max;
+
+        if ($max == $min) {
+            $h = 0;
+            $s = 0;
+        } else {
+            $delta = $max - $min;
+
+            $s = $delta / $v;
+
+            $h = 0;
+            if ($max == $r) {
+                $h = 60 * fmod(($g - $b) / $delta, 6);
+            } elseif ($max == $g) {
+                $h = 60 * ((($b - $r) / $delta) + 2);
+            } else {
+                $h = 60 * ((($r - $g) / $delta) + 4);
+            }
+        }
+
+        $h = fmod($h, 360);
+
+        $s *= 100;
+        $v *= 100;
+
+        return new HSV($h, $s, $v);
     }
 
-    public function asRYB(): RYB
+    function asRYB(): RYB
     {
-        return $this->asRGB()->asRYB();
+        list($r, $g, $b) = $this->asArray();
+
+        $w = min($r, $g, $b);
+        $r -= $w;
+        $g -= $w;
+        $b -= $w;
+
+        $mg = max($r, $g, $b);
+
+        $y = min($r, $g);
+        $r -= $y;
+        $g -= $y;
+
+        if ($b && $g) {
+            $b /= 2.0;
+            $g /= 2.0;
+        }
+
+        $y += $g;
+        $b += $g;
+
+        $my = max($r, $y, $b);
+        if ($my) {
+            $n = $mg / $my;
+            $r *= $n;
+            $y *= $n;
+            $b *= $n;
+        }
+
+        $r += $w;
+        $y += $w;
+        $b += $w;
+
+        return new RYB($r, $y, $b);
     }
 }
