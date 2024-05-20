@@ -255,7 +255,7 @@ Every color format has a method to convert to any of the other available formats
 ## Credit
 
 The original authoer for the conversion methods between RYB and RGB methods is Arah J. Leonard used under the MIT license. [Source code](https://github.com/bahamas10/node-rgb2ryb/blob/master/rgb2ryb.js)
- that was ported to JavaScript I ported to PHP. I don't know where the original code is but that is what I found and used that works here.
+ that was ported to JavaScript that I ported to PHP. I don't know where the original code is but that is what I found and used that works here.
 
 ## Contributing
 
