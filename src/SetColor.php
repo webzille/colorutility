@@ -8,7 +8,7 @@ use Webzille\ColorUtility\Colors\RGBA;
 
 class SetColor {
 
-    public static function fromString(string $colorString)
+    public static function fromString(string $colorString): Color|bool
     {
         $colorString = strtolower($colorString);
 
@@ -37,9 +37,19 @@ class SetColor {
         return false;
     }
 
-    private static function getColors($colorString) {
+    private static function getColors(string $colorString): array
+    {
         preg_match_all(Colors::$valuePattern, $colorString, $matches);
         
         return $matches[0];
+    }
+
+    public static function random(): RGB
+    {
+        $r = rand(0, 255);
+        $g = rand(0, 255);
+        $b = rand(0, 255);
+        
+        return new RGB($r, $g, $b);
     }
 }
