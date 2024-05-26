@@ -6,7 +6,8 @@ use Webzille\ColorUtility\Colors\RGB;
 use Webzille\ColorUtility\Colors\HEX;
 use Webzille\ColorUtility\Colors\RGBA;
 
-class SetColor {
+class SetColor
+{
 
     public static function fromString(string $colorString): Color|bool
     {
@@ -44,12 +45,17 @@ class SetColor {
         return $matches[0];
     }
 
-    public static function random(): RGB
+    public static function random(?int $seed = null): array
     {
-        $r = rand(0, 255);
-        $g = rand(0, 255);
-        $b = rand(0, 255);
-        
-        return new RGB($r, $g, $b);
+        $seed ??= rand();
+
+        mt_srand($seed);
+
+        $red = mt_rand(0, 255);
+        $green = mt_rand(0, 255);
+        $blue = mt_rand(0, 255);
+        $color = new RGB($red, $green, $blue);
+
+        return [$color, $seed];
     }
 }
