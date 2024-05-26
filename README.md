@@ -9,6 +9,7 @@ The Webzille Color Utility is a comprehensive PHP package designed for advanced 
 - **Color Comparisons:** Compare colors to find differences, distances, and similarities, both visually and through calculated metrics.
 - **Advanced Calculations:** Calculate angles, distances, and deviance to understand color relationships better.
 - **Color Harmonies:** Generate color schemes based on harmonic rules like complementary, analogous, triadic, and more.
+- **Random Color Generation:** Generate a random color in RGB color model with the option to use seeds to come back to original color.
 
 ## Installation
 
@@ -193,6 +194,24 @@ Generate color schemes based on predefined harmonies.
 
 ```php
 $triadicScheme = $rgbColor->triadic(); // Returns an array of RGB objects in a triadic scheme
+```
+
+### Random Color Generation
+
+You can generate a random color with or without a seed. The random color factory returns an array with the first element being the color object and the second being the seed used to generate that color object.
+
+```php
+[$color, $seed] = SetColor::random();
+echo $color->viewColor("Seed: $seed");
+```
+
+The random color factory accepts the optional $seed parameter if you want to create the color object generated before.
+
+```php
+$colorSeed = 8167421221;
+
+[$color, $seed] = SetColor::random($colorSeed);
+echo $color->viewColor("Seed: $seed");
 ```
 
 ## Color Conversions
