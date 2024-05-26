@@ -214,6 +214,8 @@ $colorSeed = 8167421221;
 echo $color->viewColor("Seed: $seed");
 ```
 
+**theme.php** provides an example using the random color factory utilizing various other features of this package.
+
 ## Color Conversions
 
 The Webzille Color Utility provides extensive support for converting between various color models, allowing seamless transitions across different color formats. This feature is crucial for applications that need to work with multiple color specifications or require specific color manipulations that are easier in certain models.
