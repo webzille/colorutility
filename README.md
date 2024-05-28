@@ -121,7 +121,7 @@ echo $labColor->asRYB()->findColorByAngle(180)->asLAB();  // LAB(87, -86, 83) //
 
 ### Catching colors from string
 
-You can catch color from strings for whatever parsing you need.
+You can catch color from strings for whatever parsing you need. This method also catches most popular named colors.
 
 ```php
 $value = ".cssRuleset {
